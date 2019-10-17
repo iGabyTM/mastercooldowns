@@ -29,16 +29,12 @@ public enum Messages {
     CHECK_INFO("{prefix} &7The cooldown &8'&c{id}&8' &7for &c{player} &7will expire in &c{leftFormatted}."),
     COOLDOWN_NOT_FOUND("{prefix} &7A cooldown named &8'&c{id}&8' &7wasn't found for for &c{player}&7."),
     HELP("&cMasterCooldowns &fv{version} &fby &cGabyTM\n \n" +
-            //" &8* &c/mcd add &7[&fplayer&7] &7[&fid&7] &7[&fduration&7]\n" +
             " &8* &c/mcd add &f[player] [id] [duration]\n" +
             "   &8&o- &7&oAdd a new cooldown, if the id is already in use the cooldown will be overridden. The duration is in seconds\n" +
-            //" &8* &c/mcd remove &7[&fplayer&7] &7[&fid&7]\n" +
             " &8* &c/mcd remove &f[player] [id]\n" +
             "   &8&o- &7&oRemove a cooldown\n" +
-            //" &8* &c/mcd check &7[&fplayer&7] &7[&fid&7]\n" +
             " &8* &c/mcd check &f[player] [id]\n" +
             "   &8&o- &7&oCheck the time left of a cooldown\n" +
-            //" &8* &c/mcd list &7[&fplayer&7]\n" +
             " &8* &c/mcd list &f[player]\n" +
             "   &8&o- &7&oA list of the active cooldowns\n" +
             " &8* &c/mcd help\n" +
