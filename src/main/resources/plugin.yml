@@ -1,0 +1,11 @@
+name: MasterCooldowns
+version: ${project.version}
+main: me.gabytm.mastercooldowns.MasterCooldowns
+softdepend: [PlaceholderAPI]
+authors: [GabyTM]
+website: https://gabytm.me/
+
+permissions:
+  mastercooldowns.access:
+    default: op
+    description: The permission required to access the plugin commands
