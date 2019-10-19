@@ -23,6 +23,7 @@ import me.gabytm.mastercooldowns.MasterCooldowns;
 import me.gabytm.mastercooldowns.cooldown.Cooldown;
 import me.gabytm.mastercooldowns.cooldown.CooldownManager;
 import me.gabytm.mastercooldowns.utils.Messages;
+import me.gabytm.mastercooldowns.utils.StringUtil;
 import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
 import org.bukkit.Bukkit;
@@ -44,6 +45,7 @@ public class ListCooldownsCommand extends CommandBase {
         CooldownManager cooldownManager = plugin.getCooldownManager();
         OfflinePlayer target = Bukkit.getOfflinePlayer(playerName);
         List<Cooldown> cooldowns = cooldownManager.getCooldowns(target.getUniqueId().toString());
+        StringBuilder message = new StringBuilder();
 
         if (cooldowns.size() == 0) {
             sender.sendMessage(Messages.LIST_EMPTY.format(target));
@@ -53,7 +55,16 @@ public class ListCooldownsCommand extends CommandBase {
         for (Cooldown cd : cooldowns) {
             if (cd.getTimeLeft() <= 0) continue;
 
-            sender.sendMessage(Messages.LIST.format(cd));
+            if (message.length() < 1) {
+                message.append(Messages.LIST.format(cd));
+            } else {
+                message.append(StringUtil.colorize("&7, ")).append(Messages.LIST.format(cd));
+            }
+        }
+
+        if (message.length() > 1) {
+            sender.sendMessage(Messages.LIST_HEADER.format(target));
+            sender.sendMessage(message.toString());
         }
     }
 }

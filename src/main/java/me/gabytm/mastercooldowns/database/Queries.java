@@ -19,24 +19,24 @@
 
 package me.gabytm.mastercooldowns.database;
 
-public enum DatabaseUtils {
-    CREATE_QUERY("CREATE TABLE IF NOT EXISTS cooldowns (\n" +
+public enum Queries {
+    CREATE_TABLE("CREATE TABLE IF NOT EXISTS cooldowns (\n" +
             "     uuid text NOT NULL,\n" +
             "     name text NOT NULL,\n" +
             "     start INTEGER NOT NULL,\n" +
             "     expiration INTEGER NOT NULL,\n" +
             "     PRIMARY KEY (uuid, name)" +
             "     )"),
-    LOAD_QUERY_DELETE("DELETE FROM cooldowns WHERE uuid = ? AND name = ?"),
-    LOAD_QUERY_SElECT("SELECT * FROM cooldowns"),
-    SAVE_QUERY_CHECK("SELECT * FROM cooldowns WHERE uuid = ? AND name = ? LIMIT 1"),
-    SAVE_QUERY_DELETE("DELETE FROM cooldowns WHERE uuid = ? AND name = ?"),
-    SAVE_QUERY_INSERT("INSERT INTO cooldowns (uuid, name, start, expiration) VALUES (?, ?, ?, ?)"),
-    SAVE_QUERY_UPDATE("UPDATE cooldowns SET start = ?, expiration = ? WHERE uuid = ? AND name = ?");
+    LOAD_DELETE("DELETE FROM cooldowns WHERE uuid = ? AND name = ?"),
+    LOAD_SElECT("SELECT * FROM cooldowns"),
+    SAVE_CHECK("SELECT * FROM cooldowns WHERE uuid = ? AND name = ? LIMIT 1"),
+    SAVE_DELETE("DELETE FROM cooldowns WHERE uuid = ? AND name = ?"),
+    SAVE_INSERT("INSERT INTO cooldowns (uuid, name, start, expiration) VALUES (?, ?, ?, ?)"),
+    SAVE_UPDATE("UPDATE cooldowns SET start = ?, expiration = ? WHERE uuid = ? AND name = ?");
 
     private String value;
 
-    DatabaseUtils(String value) { this.value = value; }
+    Queries(String value) { this.value = value; }
 
     public String value() { return value; }
 }

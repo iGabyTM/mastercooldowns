@@ -64,7 +64,7 @@ public final class MasterCooldowns extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        databaseManager.saveCooldowns();
+        databaseManager.saveCooldowns(getCooldownManager().getCooldownsList(), getCooldownManager());
         HandlerList.unregisterAll(this);
         getServer().getScheduler().cancelTasks(this);
     }

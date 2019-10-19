@@ -1,12 +1,12 @@
 ## Master Cooldowns
-⏱ The easiest and most advanced way to add cooldowns to commands.
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/53eb57fc49234a5ca081a2388bf874f2)](https://www.codacy.com/manual/iGabyTM/MasterCooldowns?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=iGabyTM/MasterCooldowns&amp;utm_campaign=Badge_Grade)
 
-### Download
+## Download
 - [SpigotMC]()
 - [Mc-Market]()
 - [McPlugins]()
 
-### Commands
+## Commands
 | Name | usage | Description |
 | --- | --- | --- |
 | `mcd add [player] [id] [duration]` | `mcd add GabyTM daily_reward 86400` | Add a new cooldown, if the id is already in use the cooldown will be overridden. The duration is in seconds |
@@ -20,7 +20,7 @@
 > Aliases: cd, mcd, mcooldowns, mcooldown.
 > ```
  
-### Placeholders
+## Placeholders
 The plugin add the following placeholders to [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/).    
 
 | Placeholder | Usage | Output | Description |
@@ -28,7 +28,7 @@ The plugin add the following placeholders to [PlaceholderAPI](https://www.spigot
 | `%mcd_left_COOLDOWN%` | `%mcd_left_daily_reward%` | 86400 | Return the time left of a cooldown as an integer |
 | `%mcd_left_formatted_COOLDOWN%` | `%mcd_left_formatted_daily_reward%` | 24h | Same as above but formatted using PlaceholderAPI simple date format |
  
-### Statistics
+## Statistics
 [![BStats](https://bstats.org/signatures/bukkit/MasterCooldowns.svg)](https://bstats.org/plugin/bukkit/MasterCooldowns)
   
 [![Discord](https://i.imgur.com/O1vSizn.png)](https://gabytm.me)

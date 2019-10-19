@@ -23,8 +23,6 @@
 package me.gabytm.mastercooldowns.utils;
 
 public class TimeUtil {
-    public TimeUtil() {}
-
     public static String getTime(int seconds) {
         if (seconds < 60) return seconds + "s";
 

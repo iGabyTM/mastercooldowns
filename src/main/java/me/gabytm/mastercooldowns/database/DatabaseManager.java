@@ -32,16 +32,16 @@ import java.util.*;
 
 public class DatabaseManager {
     private MasterCooldowns plugin;
+    private String uri;
     public DatabaseManager(MasterCooldowns plugin){
         this.plugin = plugin;
     }
 
     /**
      * Create the plugin data folder if it doesnt exists
-     * Create the database file and return it path
-     * @return path
+     * Create the database file and return the uri
      */
-    private String getDatabaseUri() {
+    private void createDatabase() {
         if (!plugin.getDataFolder().exists()) plugin.getDataFolder().mkdir();
 
         File file = new File(plugin.getDataFolder(), "database.db");
@@ -54,21 +54,24 @@ public class DatabaseManager {
                 e.printStackTrace();
             }
         }
-        return "jdbc:sqlite:" + file.toPath().toString();
+
+        this.uri = "jdbc:sqlite:" + file.toPath().toString();
     }
 
     /**
      * Setup the database connection
      */
     public void connect() {
-        try (Connection connection = DriverManager.getConnection(getDatabaseUri())){
+        createDatabase();
+
+        try (Connection connection = DriverManager.getConnection(uri)){
             if (connection != null) {
                 createTable(connection);
-                loadCooldowns();
+                plugin.getCooldownManager().loadCooldowns(loadCooldowns());
 
                 new BukkitRunnable() {
                     public void run() {
-                        saveCooldowns();
+                        saveCooldowns(plugin.getCooldownManager().getCooldownsList(), plugin.getCooldownManager());
                     }
                 }.runTaskTimerAsynchronously(plugin, 12000L, 12000L);
             }
@@ -83,9 +86,9 @@ public class DatabaseManager {
      */
     private void createTable(Connection connection) {
         try {
-            Statement statement = connection.createStatement();
+            PreparedStatement statement = connection.prepareStatement(Queries.CREATE_TABLE.value());
 
-            statement.execute(DatabaseUtils.CREATE_QUERY.value());
+            statement.executeUpdate();
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -94,18 +97,19 @@ public class DatabaseManager {
 
     /**
      * Load the data from database and store it on a map
+     * @return cooldownsList
      */
-    private void loadCooldowns() {
+    private List<Cooldown> loadCooldowns() {
         List<Cooldown> cooldownsList = new LinkedList<>();
-        CooldownManager cooldownManager = plugin.getCooldownManager();
+        //CooldownManager cooldownManager = plugin.getCooldownManager();
 
         try {
-            Connection connection = DriverManager.getConnection(getDatabaseUri());
+            Connection connection = DriverManager.getConnection(uri);
 
             if (connection != null) {
-                Statement select = connection.createStatement();
+                PreparedStatement select = connection.prepareStatement(Queries.LOAD_SElECT.value());
 
-                select.execute(DatabaseUtils.LOAD_QUERY_SElECT.value());
+                select.execute();
 
                 ResultSet selectResult = select.getResultSet();
 
@@ -116,7 +120,7 @@ public class DatabaseManager {
                     long expiration = selectResult.getLong("expiration");
 
                     if (expiration <= System.currentTimeMillis() / 1000L) {
-                        PreparedStatement delete = connection.prepareStatement(DatabaseUtils.LOAD_QUERY_DELETE.value());
+                        PreparedStatement delete = connection.prepareStatement(Queries.LOAD_DELETE.value());
 
                         delete.setString(1, uuid);
                         delete.setString(2, name);
@@ -131,29 +135,31 @@ public class DatabaseManager {
                 }
 
                 select.close();
-                cooldownManager.loadCooldowns(cooldownsList);
+                //cooldownManager.loadCooldowns(cooldownsList);
+                return cooldownsList;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        return cooldownsList;
     }
 
     /**
      * Save the cooldowns to the database and remove the expired ones
+     * @param cooldowns cooldowns list
+     * @param cooldownManager {@link CooldownManager}
      */
-    public void saveCooldowns(){
-        CooldownManager cooldownManager = plugin.getCooldownManager();
-        List<Cooldown> cooldowns = cooldownManager.getCooldownsList();
-
+    public void saveCooldowns(List<Cooldown> cooldowns, CooldownManager cooldownManager){
         if (cooldowns.size() == 0) return;
 
         try {
             for (Cooldown cd : cooldowns) {
-                Connection connection = DriverManager.getConnection(getDatabaseUri());
+                Connection connection = DriverManager.getConnection(uri);
 
                 if (connection != null) {
                     if (cd.getExpiration() <= System.currentTimeMillis() / 1000L) {
-                        PreparedStatement delete = connection.prepareStatement(DatabaseUtils.SAVE_QUERY_DELETE.value());
+                        PreparedStatement delete = connection.prepareStatement(Queries.SAVE_DELETE.value());
 
                         delete.setString(1, cd.getUuid());
                         delete.setString(2, cd.getName());
@@ -164,7 +170,7 @@ public class DatabaseManager {
                         continue;
                     }
 
-                    PreparedStatement check = connection.prepareStatement(DatabaseUtils.SAVE_QUERY_CHECK.value());
+                    PreparedStatement check = connection.prepareStatement(Queries.SAVE_CHECK.value());
 
                     check.setString(1, cd.getUuid());
                     check.setString(2, cd.getName());
@@ -173,7 +179,7 @@ public class DatabaseManager {
                     ResultSet checkResult = check.getResultSet();
 
                     if (!checkResult.next()) {
-                        PreparedStatement insert = connection.prepareStatement(DatabaseUtils.SAVE_QUERY_INSERT.value());
+                        PreparedStatement insert = connection.prepareStatement(Queries.SAVE_INSERT.value());
 
                         insert.setString(1, cd.getUuid());
                         insert.setString(2, cd.getName());
@@ -184,7 +190,7 @@ public class DatabaseManager {
                         continue;
                     }
 
-                    PreparedStatement update = connection.prepareStatement(DatabaseUtils.SAVE_QUERY_UPDATE.value());
+                    PreparedStatement update = connection.prepareStatement(Queries.SAVE_UPDATE.value());
 
                     update.setLong(1, cd.getStart());
                     update.setLong(2, cd.getExpiration());

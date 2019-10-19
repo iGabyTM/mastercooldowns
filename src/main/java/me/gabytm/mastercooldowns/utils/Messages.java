@@ -42,8 +42,9 @@ public enum Messages {
     INCORRECT_USAGE("{prefix} &7Incorrect usage! Type &c/mcp help &7for help."),
     NO_PERMISSION("{prefix} &cYou don't have access to use this command!"),
     REMOVE("{prefix} &7The cooldown &8'&c{id}&8' &7has been removed for &c{player}&7."),
-    LIST("&8* &7ID: &c{id}&7, Time left: &c{leftFormatted}"),
+    LIST("&c{id} &8(&f{leftFormatted}&8)"),
     LIST_EMPTY("{prefix} &c{player} &7has no active cooldowns."),
+    LIST_HEADER("{prefix} &c{player}'s &7active cooldowns:\n"),
     UNKNOWN_COMMAND("{prefix} &7Unknown command, type &c/mcp help &7for help.");
 
     private String value;
