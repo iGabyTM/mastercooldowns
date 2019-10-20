@@ -107,7 +107,7 @@ public class DatabaseManager {
             Connection connection = DriverManager.getConnection(uri);
 
             if (connection != null) {
-                PreparedStatement select = connection.prepareStatement(Queries.LOAD_SElECT.value());
+                PreparedStatement select = connection.prepareStatement(Queries.LOAD_SELECT.value());
 
                 select.execute();
 

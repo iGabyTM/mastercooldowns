@@ -28,7 +28,7 @@ public enum Queries {
             "     PRIMARY KEY (uuid, name)" +
             "     )"),
     LOAD_DELETE("DELETE FROM cooldowns WHERE uuid = ? AND name = ?"),
-    LOAD_SElECT("SELECT * FROM cooldowns"),
+    LOAD_SELECT("SELECT * FROM cooldowns"),
     SAVE_CHECK("SELECT * FROM cooldowns WHERE uuid = ? AND name = ? LIMIT 1"),
     SAVE_DELETE("DELETE FROM cooldowns WHERE uuid = ? AND name = ?"),
     SAVE_INSERT("INSERT INTO cooldowns (uuid, name, start, expiration) VALUES (?, ?, ?, ?)"),
