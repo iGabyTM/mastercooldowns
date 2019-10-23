@@ -33,6 +33,5 @@
     <orderEntry type="library" name="Maven: me.mattstudios.utils:matts-framework:1.1.0-BETA" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: me.clip:placeholderapi:2.10.4" level="project" />
     <orderEntry type="library" name="Maven: org.bstats:bstats-bukkit:1.5" level="project" />
-    <orderEntry type="library" name="Expansion-TokenEnchant" level="project" />
   </component>
 </module>
