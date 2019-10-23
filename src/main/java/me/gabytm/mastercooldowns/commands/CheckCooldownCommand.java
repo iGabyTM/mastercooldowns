@@ -45,7 +45,7 @@ public class CheckCooldownCommand extends CommandBase {
         CooldownManager cooldownManager = plugin.getCooldownManager();
         OfflinePlayer target = Bukkit.getOfflinePlayer(playerName);
         String name = cdName.toUpperCase();
-        Cooldown cooldown = cooldownManager.getCooldownByName(target.getUniqueId().toString(), name);
+        Cooldown cooldown = cooldownManager.getCooldownByName(target.getUniqueId(), name);
 
         if (cooldown == null || cooldown.getTimeLeft() == 0) {
             sender.sendMessage(Messages.COOLDOWN_NOT_FOUND.format(cdName, target));

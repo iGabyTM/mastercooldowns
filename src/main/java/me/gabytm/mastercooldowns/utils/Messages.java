@@ -27,7 +27,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public enum Messages {
     ADD_INFO("{prefix} &7A new cooldown &8'&c{id}&8' &7has been added for &c{player}&7, it will expire in &c{leftFormatted}&7."),
     CHECK_INFO("{prefix} &7The cooldown &8'&c{id}&8' &7for &c{player} &7will expire in &c{leftFormatted}."),
-    COOLDOWN_NOT_FOUND("{prefix} &7A cooldown named &8'&c{id}&8' &7wasn't found for for &c{player}&7."),
+    COOLDOWN_NOT_FOUND("{prefix} &7A cooldown named &8'&c{id}&8' &7wasn't found for &c{player}&7."),
     HELP("&cMasterCooldowns &fv{version} &fby &cGabyTM\n \n" +
             " &8* &c/mcd add &f[player] [id] [duration]\n" +
             "   &8&o- &7&oAdd a new cooldown, if the id is already in use the cooldown will be overridden. The duration is in seconds\n" +

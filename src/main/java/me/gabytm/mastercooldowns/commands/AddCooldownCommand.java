@@ -43,17 +43,9 @@ public class AddCooldownCommand extends CommandBase {
     public void onCommand(CommandSender sender, String playerName, String cdName, Long cdDuration) {
         CooldownManager cooldownManager = plugin.getCooldownManager();
         OfflinePlayer target = Bukkit.getOfflinePlayer(playerName);
-        String name = cdName.toUpperCase();
         long duration = System.currentTimeMillis() / 1000L + cdDuration;
 
-        Cooldown cooldown = new Cooldown(target.getUniqueId().toString(), name, System.currentTimeMillis() / 1000L, duration);
-
-        if (cooldownManager.getCooldownByName(target.getUniqueId().toString(), name) != null) {
-            cooldownManager.removeCooldown(target.getUniqueId().toString(), name);
-            cooldownManager.addCooldown(cooldown);
-            sender.sendMessage(Messages.ADD_INFO.format(cooldown));
-            return;
-        }
+        Cooldown cooldown = new Cooldown(target.getUniqueId(), cdName, System.currentTimeMillis() / 1000L, duration);
 
         cooldownManager.addCooldown(cooldown);
         sender.sendMessage(Messages.ADD_INFO.format(cooldown));

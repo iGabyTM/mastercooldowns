@@ -28,7 +28,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class Cooldown implements Serializable {
-    private String uuid;
+    private UUID uuid;
     private String name;
     private long start;
     private long expiration;
@@ -40,7 +40,7 @@ public class Cooldown implements Serializable {
      * @param start cooldown start time
      * @param expiration cooldown expiration time
      */
-    public Cooldown(String uuid, String name, long start, long expiration) {
+    public Cooldown(UUID uuid, String name, long start, long expiration) {
         this.uuid = uuid;
         this.name = name;
         this.start = start;
@@ -51,7 +51,7 @@ public class Cooldown implements Serializable {
      * Get the player uuid
      * @return uuid
      */
-    public String getUuid() {
+    public UUID getPlayerUuid() {
         return uuid;
     }
 
@@ -102,7 +102,7 @@ public class Cooldown implements Serializable {
      * Get the player object of a cooldown
      * @return {@link OfflinePlayer}
      */
-    public OfflinePlayer getPlayer() { return Bukkit.getOfflinePlayer(UUID.fromString(getUuid())); }
+    public OfflinePlayer getPlayer() { return Bukkit.getOfflinePlayer(getPlayerUuid()); }
 
     /**
      * Set the cooldown name

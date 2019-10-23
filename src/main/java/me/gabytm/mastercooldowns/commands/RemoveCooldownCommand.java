@@ -42,15 +42,14 @@ public class RemoveCooldownCommand extends CommandBase {
     public void onCommand(CommandSender sender, String playerName, String cdName) {
         CooldownManager cooldownManager = plugin.getCooldownManager();
         OfflinePlayer target = Bukkit.getOfflinePlayer(playerName);
-        String name = cdName.toUpperCase();
-        Cooldown cooldown = cooldownManager.getCooldownByName(target.getUniqueId().toString(), name);
+        Cooldown cooldown = cooldownManager.getCooldownByName(target.getUniqueId(), cdName);
 
         if (cooldown == null) {
             sender.sendMessage(Messages.COOLDOWN_NOT_FOUND.format(cdName, target));
             return;
         }
 
-        cooldown.setExpiration(System.currentTimeMillis() / 1000L);
+        cooldownManager.removeCooldown(cooldown);
         sender.sendMessage(Messages.REMOVE.format(cooldown));
     }
 }

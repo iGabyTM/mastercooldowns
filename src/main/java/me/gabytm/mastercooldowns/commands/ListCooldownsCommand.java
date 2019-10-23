@@ -44,7 +44,7 @@ public class ListCooldownsCommand extends CommandBase {
     public void onCommand(CommandSender sender, String playerName) {
         CooldownManager cooldownManager = plugin.getCooldownManager();
         OfflinePlayer target = Bukkit.getOfflinePlayer(playerName);
-        List<Cooldown> cooldowns = cooldownManager.getCooldowns(target.getUniqueId().toString());
+        List<Cooldown> cooldowns = cooldownManager.getPlayerCooldowns(target.getUniqueId());
         StringBuilder message = new StringBuilder();
 
         if (cooldowns.size() == 0) {

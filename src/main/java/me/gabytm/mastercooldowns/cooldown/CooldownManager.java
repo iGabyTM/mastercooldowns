@@ -21,6 +21,7 @@ package me.gabytm.mastercooldowns.cooldown;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 public class CooldownManager {
     private List<Cooldown> cooldownsList = new LinkedList<>();
@@ -46,11 +47,11 @@ public class CooldownManager {
      * @param uuid player uuid
      * @return list
      */
-    public List<Cooldown> getCooldowns(String uuid) {
+    public List<Cooldown> getPlayerCooldowns(UUID uuid) {
         List<Cooldown> list = new LinkedList<>();
 
         for (Cooldown cd : cooldownsList) {
-            if (cd.getUuid().equals(uuid)) list.add(cd);
+            if (cd.getPlayerUuid().equals(uuid)) list.add(cd);
         }
 
         return list;
@@ -60,11 +61,11 @@ public class CooldownManager {
      * Get a cooldown of a specific player by name
      * @param uuid player uuid
      * @param name cooldown name
-     * @return cd
+     * @return {@link Cooldown}
      */
-    public Cooldown getCooldownByName(String uuid, String name) {
+    public Cooldown getCooldownByName(UUID uuid, String name) {
         for (Cooldown cd : cooldownsList) {
-            if (cd.getUuid().equals(uuid) && cd.getName().equals(name)) return cd;
+            if (cd.getPlayerUuid().equals(uuid) && cd.getName().equals(name.toUpperCase())) return cd;
         }
 
         return null;
@@ -77,12 +78,9 @@ public class CooldownManager {
      * @param start cooldown start time
      * @param expiration cooldown duration
      */
-    public void addCooldown(String uuid, String name, long start, long expiration) {
+    public void addCooldown(UUID uuid, String name, long start, long expiration) {
         cooldownsList.remove(getCooldownByName(uuid, name));
-
-        Cooldown cooldown = new Cooldown(uuid, name, start, expiration);
-
-        cooldownsList.add(cooldown);
+        cooldownsList.add(new Cooldown(uuid, name, start, expiration));
     }
 
     /**
@@ -90,7 +88,7 @@ public class CooldownManager {
      * @param cooldown the cooldown object
      */
     public void addCooldown(Cooldown cooldown) {
-        cooldownsList.remove(getCooldownByName(cooldown.getUuid(), cooldown.getName()));
+        cooldownsList.remove(getCooldownByName(cooldown.getPlayerUuid(), cooldown.getName()));
         cooldownsList.add(cooldown);
     }
 
@@ -99,18 +97,16 @@ public class CooldownManager {
      * @param uuid player uuid
      * @param name cooldown name
      */
-    public void removeCooldown(String uuid, String name) {
-        Cooldown cooldown = getCooldownByName(uuid, name);
-
-        cooldownsList.remove(cooldown);
+    public void removeCooldown(UUID uuid, String name) {
+        getCooldownsList().remove(getCooldownByName(uuid, name));
     }
 
     /**
-     * Remove a specific cooldown from the cooldownsList list
+     * Remove a specific cooldown
      * @param cooldown object
      */
     public void removeCooldown(Cooldown cooldown) {
-        cooldownsList.remove(cooldown);
+        getCooldownsList().remove(cooldown);
     }
 
     /**
@@ -119,7 +115,7 @@ public class CooldownManager {
      * @param name cooldown name
      * @param newName cooldown new name
      */
-    public void renameCooldown(String uuid, String name, String newName) {
+    public void renameCooldown(UUID uuid, String name, String newName) {
         Cooldown cooldown = getCooldownByName(uuid, name);
 
         if (!cooldownsList.contains(cooldown)) return;

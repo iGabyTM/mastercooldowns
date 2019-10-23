@@ -73,7 +73,7 @@ public class DatabaseManager {
                     public void run() {
                         saveCooldowns(plugin.getCooldownManager().getCooldownsList(), plugin.getCooldownManager());
                     }
-                }.runTaskTimerAsynchronously(plugin, 12000L, 12000L);
+                }.runTaskTimerAsynchronously(plugin, 200L, 200L); //12000L
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -114,7 +114,7 @@ public class DatabaseManager {
                 ResultSet selectResult = select.getResultSet();
 
                 while (selectResult.next()) {
-                    String uuid = selectResult.getString("uuid");
+                    UUID uuid = UUID.fromString(selectResult.getString("uuid"));
                     String name = selectResult.getString("name");
                     long start = selectResult.getLong("start");
                     long expiration = selectResult.getLong("expiration");
@@ -122,7 +122,7 @@ public class DatabaseManager {
                     if (expiration <= System.currentTimeMillis() / 1000L) {
                         PreparedStatement delete = connection.prepareStatement(Queries.LOAD_DELETE.value());
 
-                        delete.setString(1, uuid);
+                        delete.setString(1, uuid.toString());
                         delete.setString(2, name);
                         delete.executeUpdate();
                         delete.close();
@@ -161,18 +161,17 @@ public class DatabaseManager {
                     if (cd.getExpiration() <= System.currentTimeMillis() / 1000L) {
                         PreparedStatement delete = connection.prepareStatement(Queries.SAVE_DELETE.value());
 
-                        delete.setString(1, cd.getUuid());
+                        delete.setString(1, cd.getPlayerUuid().toString());
                         delete.setString(2, cd.getName());
                         delete.executeUpdate();
                         delete.close();
                         cooldownManager.removeCooldown(cd);
-                        cooldowns.remove(cd);
                         continue;
                     }
 
                     PreparedStatement check = connection.prepareStatement(Queries.SAVE_CHECK.value());
 
-                    check.setString(1, cd.getUuid());
+                    check.setString(1, cd.getPlayerUuid().toString());
                     check.setString(2, cd.getName());
                     check.execute();
 
@@ -181,7 +180,7 @@ public class DatabaseManager {
                     if (!checkResult.next()) {
                         PreparedStatement insert = connection.prepareStatement(Queries.SAVE_INSERT.value());
 
-                        insert.setString(1, cd.getUuid());
+                        insert.setString(1, cd.getPlayerUuid().toString());
                         insert.setString(2, cd.getName());
                         insert.setLong(3, cd.getStart());
                         insert.setLong(4, cd.getExpiration());
@@ -194,13 +193,15 @@ public class DatabaseManager {
 
                     update.setLong(1, cd.getStart());
                     update.setLong(2, cd.getExpiration());
-                    update.setString(3, cd.getUuid());
+                    update.setString(3, cd.getPlayerUuid().toString());
                     update.setString(4, cd.getName());
                     update.executeUpdate();
                     update.close();
                     check.close();
                 }
             }
+
+            cooldowns.removeIf(cd -> cd.getExpiration() <= System.currentTimeMillis() / 1000L);
 
             plugin.getLogger().info(StringUtil.colorize("&aSaving cooldowns to database."));
         } catch (SQLException e) {

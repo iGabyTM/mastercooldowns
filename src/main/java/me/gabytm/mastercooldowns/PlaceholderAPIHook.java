@@ -53,11 +53,11 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
     public String onRequest(OfflinePlayer p, String param){
         CooldownManager cooldownManager = plugin.getCooldownManager();
 
-        if (param.toUpperCase().startsWith("LEFT_FORMATTED_")) {
-            String[] input = param.toUpperCase().split("LEFT_FORMATTED_");
+        if (param.toLowerCase().startsWith("left_formatted_")) {
+            String[] input = param.toLowerCase().split("left_formatted_");
 
             if (input.length >= 2) {
-                Cooldown cooldown = cooldownManager.getCooldownByName(p.getUniqueId().toString(), input[1]);
+                Cooldown cooldown = cooldownManager.getCooldownByName(p.getUniqueId(), input[1]);
 
                 if (cooldown == null) return "0";
 
@@ -69,11 +69,11 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             return "0";
         }
 
-        if (param.toUpperCase().startsWith("LEFT_")) {
-            String[] input = param.toUpperCase().split("LEFT_");
+        if (param.toLowerCase().startsWith("left_")) {
+            String[] input = param.toLowerCase().split("left_");
 
             if (input.length >= 2) {
-                Cooldown cooldown = cooldownManager.getCooldownByName(p.getUniqueId().toString(), input[1]);
+                Cooldown cooldown = cooldownManager.getCooldownByName(p.getUniqueId(), input[1]);
 
                 return cooldown != null ? String.valueOf(cooldown.getTimeLeft()) : "0";
             }
