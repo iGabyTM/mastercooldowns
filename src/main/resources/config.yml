@@ -1,0 +1,45 @@
+#
+# The values used by PlaceholderAPI placeholders
+#
+placeholders:
+  empty: 0
+  formatted:
+    empty: 0s
+    seconds: s
+    minutes: m
+    hours: h
+    days: d
+
+#
+# General setting
+#
+settings:
+  #
+  # The command name
+  #  • add - /mcd add [player|*|**] [id] [duration]
+  #  • remove - /mcd remove [player|*|**] [id|all]
+  #
+  add:
+    #
+    # The function name
+    #  • all - add a cooldown to all online or offline players
+    #
+    all:
+      #
+      # • onlineSendMessages  - send messages when adding cooldown to all online players
+      # • offlineSendMessages - send messages when adding cooldown to all offline players
+      #
+      onlineSendMessages: true
+      offlineSendMessages: true
+  remove:
+    #
+    # The function name
+    #  • all - remove cooldowns from all online or offline players
+    #
+    all:
+      #
+      # • onlineSendMessages  - send messages when removing cooldowns for all online players
+      # • offlineSendMessages - send messages when removing cooldowns for all offline players
+      #
+      onlineSendMessages: true
+      offlineSendMessages: true

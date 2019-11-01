@@ -28,6 +28,9 @@ import me.mattstudios.mf.base.CommandBase;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.List;
 
 @Command("mastercooldowns")
 @Alias({"cd", "mcd", "mcooldowns", "mcooldown"})
@@ -39,17 +42,95 @@ public class RemoveCooldownCommand extends CommandBase {
     @Completion("#players")
     @Permission("mastercooldowns.access")
     @SuppressWarnings("Duplicates")
-    public void onCommand(CommandSender sender, String playerName, String cdName) {
+    public void onCommand(CommandSender sender, String from, String cdName) {
         CooldownManager cooldownManager = plugin.getCooldownManager();
-        OfflinePlayer target = Bukkit.getOfflinePlayer(playerName);
-        Cooldown cooldown = cooldownManager.getCooldownByName(target.getUniqueId(), cdName);
+        boolean onlineSendMessages = plugin.getConfig().getBoolean("settings.remove.all.onlineSendMessages", true);
+        boolean offlineSendMessages = plugin.getConfig().getBoolean("settings.remove.all.offlineSendMessages", true);
 
-        if (cooldown == null) {
-            sender.sendMessage(Messages.COOLDOWN_NOT_FOUND.format(cdName, target));
+        // Remove cooldowns from all online players
+        if (from.equals("*")) {
+            if (sender.getServer().getOnlinePlayers().size() == 0) {
+                sender.sendMessage(Messages.NO_ONLINE_PLAYERS.value());
+                return;
+            }
+
+            // Remove all cooldowns from all online players
+            if (cdName.equalsIgnoreCase("all")) {
+                for (Player p : sender.getServer().getOnlinePlayers()) {
+                    removeAllCooldowns(cooldownManager, p, sender, onlineSendMessages);
+                }
+
+                return;
+            }
+
+            // Remove the specified cooldown from all online players
+            for (Player p : sender.getServer().getOnlinePlayers()) {
+                removeCooldown(cooldownManager, p, sender, cdName, onlineSendMessages);
+            }
+
+            return;
+        }
+
+        // Remove cooldowns from all offline players
+        if (from.equals("**")) {
+            if (sender.getServer().getOfflinePlayers().length == 0) {
+                sender.sendMessage(Messages.NO_OFFLINE_PLAYERS.value());
+                return;
+            }
+
+            // Remove all cooldowns from all offline players
+            if (cdName.equalsIgnoreCase("all")) {
+                for (OfflinePlayer p : sender.getServer().getOfflinePlayers()) {
+                    removeAllCooldowns(cooldownManager, p, sender, offlineSendMessages);
+                }
+
+                return;
+            }
+
+            // Remove the specified cooldown from all offline players
+            for (OfflinePlayer p : sender.getServer().getOfflinePlayers()) {
+                removeCooldown(cooldownManager, p, sender, cdName, offlineSendMessages);
+            }
+
+            return;
+        }
+
+        OfflinePlayer target = Bukkit.getOfflinePlayer(from);
+
+        // Remove all cooldowns from the target
+        if (cdName.equalsIgnoreCase("all")) {
+            removeAllCooldowns(cooldownManager, target, sender, true);
+            return;
+        }
+
+        // Remove the specified cooldown from the target
+        removeCooldown(cooldownManager, target, sender, cdName, true);
+    }
+
+    private void removeCooldown(CooldownManager cooldownManager, OfflinePlayer p, CommandSender s, String name, boolean sendMessages) {
+        Cooldown cooldown = cooldownManager.getCooldownByName(p.getUniqueId(), name);
+
+        if (cooldown == null || cooldown.isExpired()) {
+            if (sendMessages) s.sendMessage(Messages.COOLDOWN_NOT_FOUND.format(name, p));
             return;
         }
 
         cooldownManager.removeCooldown(cooldown);
-        sender.sendMessage(Messages.REMOVE.format(cooldown));
+        if (sendMessages) s.sendMessage(Messages.REMOVE.format(cooldown));
+    }
+
+    private void removeAllCooldowns(CooldownManager cooldownManager, OfflinePlayer p, CommandSender s, boolean sendMessages) {
+        List<Cooldown> cooldowns = cooldownManager.getPlayerActiveCooldowns(p.getUniqueId());
+
+        if (cooldowns.size() == 0) {
+            if (sendMessages) s.sendMessage(Messages.LIST_EMPTY.format(p));
+            return;
+        }
+
+        for (Cooldown cd : cooldowns) {
+            cooldownManager.removeCooldown(cd);
+        }
+
+        if (sendMessages) s.sendMessage(Messages.REMOVE_ALL.format(cooldowns.size(), p));
     }
 }

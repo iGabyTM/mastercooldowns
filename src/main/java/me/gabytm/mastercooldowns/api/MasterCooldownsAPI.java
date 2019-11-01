@@ -74,6 +74,15 @@ public class MasterCooldownsAPI {
     }
 
     /**
+     * Get the active cooldowns list of a specific player
+     * @param uuid player uuid
+     * @return list
+     */
+    public List<Cooldown> getPlayerActiveCooldowns(UUID uuid) {
+        return plugin.getCooldownManager().getPlayerActiveCooldowns(uuid);
+    }
+
+    /**
      * Get the cooldownsList list
      * @return cooldownsList
      */

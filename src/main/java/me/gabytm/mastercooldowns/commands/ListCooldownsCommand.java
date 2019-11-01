@@ -44,7 +44,7 @@ public class ListCooldownsCommand extends CommandBase {
     public void onCommand(CommandSender sender, String playerName) {
         CooldownManager cooldownManager = plugin.getCooldownManager();
         OfflinePlayer target = Bukkit.getOfflinePlayer(playerName);
-        List<Cooldown> cooldowns = cooldownManager.getPlayerCooldowns(target.getUniqueId());
+        List<Cooldown> cooldowns = cooldownManager.getPlayerActiveCooldowns(target.getUniqueId());
         StringBuilder message = new StringBuilder();
 
         if (cooldowns.size() == 0) {
@@ -53,18 +53,15 @@ public class ListCooldownsCommand extends CommandBase {
         }
 
         for (Cooldown cd : cooldowns) {
-            if (cd.getTimeLeft() <= 0) continue;
-
-            if (message.length() < 1) {
-                message.append(Messages.LIST.format(cd));
-            } else {
-                message.append(StringUtil.colorize("&7, ")).append(Messages.LIST.format(cd));
-            }
+            if (message.length() < 1) message.append(Messages.LIST.format(cd));
+            else message.append(StringUtil.colorize("&7, ")).append(Messages.LIST.format(cd));
         }
 
-        if (message.length() > 1) {
+        if (cooldowns.size() > 0) {
             sender.sendMessage(Messages.LIST_HEADER.format(target));
             sender.sendMessage(message.toString());
         }
+
+        else sender.sendMessage(Messages.LIST_EMPTY.format(target));
     }
 }

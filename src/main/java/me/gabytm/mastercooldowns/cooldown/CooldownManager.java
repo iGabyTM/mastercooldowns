@@ -58,6 +58,21 @@ public class CooldownManager {
     }
 
     /**
+     * Get the active cooldowns list of a specific player
+     * @param uuid player uuid
+     * @return list
+     */
+    public List<Cooldown> getPlayerActiveCooldowns(UUID uuid) {
+        List<Cooldown> list = new LinkedList<>();
+
+        for (Cooldown cd : cooldownsList) {
+            if (cd.getPlayerUuid().equals(uuid) && !cd.isExpired()) list.add(cd);
+        }
+
+        return list;
+    }
+
+    /**
      * Get a cooldown of a specific player by name
      * @param uuid player uuid
      * @param name cooldown name
@@ -65,7 +80,7 @@ public class CooldownManager {
      */
     public Cooldown getCooldownByName(UUID uuid, String name) {
         for (Cooldown cd : cooldownsList) {
-            if (cd.getPlayerUuid().equals(uuid) && cd.getName().equals(name.toUpperCase())) return cd;
+            if (cd.getPlayerUuid().equals(uuid) && cd.getName().equalsIgnoreCase(name)) return cd;
         }
 
         return null;
@@ -79,8 +94,14 @@ public class CooldownManager {
      * @param expiration cooldown duration
      */
     public void addCooldown(UUID uuid, String name, long start, long expiration) {
-        cooldownsList.remove(getCooldownByName(uuid, name));
-        cooldownsList.add(new Cooldown(uuid, name, start, expiration));
+        Cooldown cd = getCooldownByName(uuid, name);
+
+        if (cd == null) {
+            cooldownsList.add(new Cooldown(uuid, name.toUpperCase(), start, expiration));
+        } else {
+            getCooldownByName(uuid, name).setStart(start);
+            getCooldownByName(uuid, name).setExpiration(expiration);
+        }
     }
 
     /**
@@ -88,8 +109,16 @@ public class CooldownManager {
      * @param cooldown the cooldown object
      */
     public void addCooldown(Cooldown cooldown) {
-        cooldownsList.remove(getCooldownByName(cooldown.getPlayerUuid(), cooldown.getName()));
-        cooldownsList.add(cooldown);
+        UUID uuid = cooldown.getPlayerUuid();
+        String name = cooldown.getName();
+        Cooldown cd = getCooldownByName(uuid, name);
+
+        if (cd == null) {
+            cooldownsList.add(cooldown);
+        } else {
+            getCooldownByName(uuid, name).setStart(cooldown.getStart());
+            getCooldownByName(uuid, name).setExpiration(cooldown.getExpiration());
+        }
     }
 
     /**
@@ -98,7 +127,7 @@ public class CooldownManager {
      * @param name cooldown name
      */
     public void removeCooldown(UUID uuid, String name) {
-        getCooldownsList().remove(getCooldownByName(uuid, name));
+        getCooldownByName(uuid, name).setExpiration(System.currentTimeMillis() / 1000L);
     }
 
     /**
@@ -106,7 +135,7 @@ public class CooldownManager {
      * @param cooldown object
      */
     public void removeCooldown(Cooldown cooldown) {
-        getCooldownsList().remove(cooldown);
+        cooldown.setExpiration(System.currentTimeMillis() / 1000L);
     }
 
     /**

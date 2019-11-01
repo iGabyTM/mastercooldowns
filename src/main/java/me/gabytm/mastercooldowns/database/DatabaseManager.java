@@ -21,7 +21,6 @@ package me.gabytm.mastercooldowns.database;
 
 import me.gabytm.mastercooldowns.MasterCooldowns;
 import me.gabytm.mastercooldowns.cooldown.Cooldown;
-import me.gabytm.mastercooldowns.cooldown.CooldownManager;
 import me.gabytm.mastercooldowns.utils.StringUtil;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -49,9 +48,10 @@ public class DatabaseManager {
         if (!file.exists()) {
             try {
                 file.createNewFile();
-                plugin.getLogger().info(StringUtil.colorize("&cNo database file found, creating one."));
+                StringUtil.infoLog(plugin, "&cNo database found, creating one...");
             } catch (IOException e) {
                 e.printStackTrace();
+                StringUtil.severLog(plugin, "&cAn error occurred while creating the database.");
             }
         }
 
@@ -64,18 +64,21 @@ public class DatabaseManager {
     public void connect() {
         createDatabase();
 
-        try (Connection connection = DriverManager.getConnection(uri)){
+        try {
+            Class.forName("org.sqlite.JDBC");
+            Connection connection = DriverManager.getConnection(uri);
+
             if (connection != null) {
                 createTable(connection);
                 plugin.getCooldownManager().loadCooldowns(loadCooldowns());
 
                 new BukkitRunnable() {
                     public void run() {
-                        saveCooldowns(plugin.getCooldownManager().getCooldownsList(), plugin.getCooldownManager());
+                        saveCooldowns(plugin.getCooldownManager().getCooldownsList());
                     }
-                }.runTaskTimerAsynchronously(plugin, 200L, 200L); //12000L
+                }.runTaskTimerAsynchronously(plugin, 12000L, 12000L);
             }
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -101,7 +104,6 @@ public class DatabaseManager {
      */
     private List<Cooldown> loadCooldowns() {
         List<Cooldown> cooldownsList = new LinkedList<>();
-        //CooldownManager cooldownManager = plugin.getCooldownManager();
 
         try {
             Connection connection = DriverManager.getConnection(uri);
@@ -134,12 +136,15 @@ public class DatabaseManager {
                     cooldownsList.add(cooldown);
                 }
 
+                if (cooldownsList.size() == 0) StringUtil.infoLog(plugin, "&cNo cooldowns found.");
+                else StringUtil.infoLog(plugin, cooldownsList.size() + " &acooldown(s) have been loaded.");
+
                 select.close();
-                //cooldownManager.loadCooldowns(cooldownsList);
                 return cooldownsList;
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            StringUtil.severLog(plugin, "&cAn error occurred while loading the cooldowns.");
         }
 
         return cooldownsList;
@@ -148,24 +153,24 @@ public class DatabaseManager {
     /**
      * Save the cooldowns to the database and remove the expired ones
      * @param cooldowns cooldowns list
-     * @param cooldownManager {@link CooldownManager}
      */
-    public void saveCooldowns(List<Cooldown> cooldowns, CooldownManager cooldownManager){
+    public void saveCooldowns(List<Cooldown> cooldowns){
         if (cooldowns.size() == 0) return;
 
         try {
-            for (Cooldown cd : cooldowns) {
-                Connection connection = DriverManager.getConnection(uri);
+            Connection connection = DriverManager.getConnection(uri);
+            List<Cooldown> expiredCooldowns = new LinkedList<>();
 
+            for (Cooldown cd : cooldowns) {
                 if (connection != null) {
-                    if (cd.getExpiration() <= System.currentTimeMillis() / 1000L) {
+                    if (cd.isExpired()) {
                         PreparedStatement delete = connection.prepareStatement(Queries.SAVE_DELETE.value());
 
                         delete.setString(1, cd.getPlayerUuid().toString());
                         delete.setString(2, cd.getName());
                         delete.executeUpdate();
                         delete.close();
-                        cooldownManager.removeCooldown(cd);
+                        expiredCooldowns.add(cd);
                         continue;
                     }
 
@@ -201,9 +206,10 @@ public class DatabaseManager {
                 }
             }
 
-            cooldowns.removeIf(cd -> cd.getExpiration() <= System.currentTimeMillis() / 1000L);
+            cooldowns.removeAll(expiredCooldowns);
 
-            plugin.getLogger().info(StringUtil.colorize("&aSaving cooldowns to database."));
+            if (cooldowns.size() > 0) StringUtil.infoLog(plugin, "&aSaving &f" + cooldowns.size() + " &acooldown(s) to database.");
+            else StringUtil.infoLog(plugin,"&aSaving cooldowns to database.");
         } catch (SQLException e) {
             e.printStackTrace();
         }

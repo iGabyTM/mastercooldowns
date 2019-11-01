@@ -1,4 +1,3 @@
-
 /*
  *
  * PlaceholderAPI
@@ -22,15 +21,23 @@
 
 package me.gabytm.mastercooldowns.utils;
 
+import me.gabytm.mastercooldowns.MasterCooldowns;
+
 public class TimeUtil {
     public static String getTime(int seconds) {
-        if (seconds < 60) return seconds + "s";
+        MasterCooldowns plugin = MasterCooldowns.getPlugin(MasterCooldowns.class);
+        String sSymbol = plugin.getConfig().getString("placeholders.formatted.seconds", "s");
+        String mSymbol = plugin.getConfig().getString("placeholders.formatted.minutes", "m");
+        String hSymbol = plugin.getConfig().getString("placeholders.formatted.hours", "h");
+        String dSymbol = plugin.getConfig().getString("placeholders.formatted.days", "d");
+
+        if (seconds < 60) return seconds + sSymbol;
 
         int minutes = seconds / 60;
         int s = 60 * minutes;
         int secondsLeft = seconds - s;
 
-        if (minutes < 60) return secondsLeft > 0 ? minutes + "m " + secondsLeft + "s" : minutes + "m";
+        if (minutes < 60) return secondsLeft > 0 ? minutes + mSymbol + " " + secondsLeft + sSymbol : minutes + mSymbol;
 
         String time;
         int days;
@@ -39,38 +46,33 @@ public class TimeUtil {
 
         if (minutes < 1440) {
             days = minutes / 60;
-            time = days + "h";
+            time = days + hSymbol;
             inMins = 60 * days;
             leftOver = minutes - inMins;
-            if (leftOver >= 1) {
-                time = time + " " + leftOver + "m";
-            }
 
-            if (secondsLeft > 0) {
-                time = time + " " + secondsLeft + "s";
-            }
+            if (leftOver >= 1) time = time + " " + leftOver + mSymbol;
+            if (secondsLeft > 0) time = time + " " + secondsLeft + sSymbol;
 
             return time;
         }
 
         days = minutes / 1440;
-        time = days + "d";
+        time = days + dSymbol;
         inMins = 1440 * days;
         leftOver = minutes - inMins;
 
         if (leftOver >= 1) {
-            if (leftOver < 60) {
-                time = time + " " + leftOver + "m";
-            } else {
+            if (leftOver < 60) time = time + " " + leftOver + "m";
+            else {
                 int hours = leftOver / 60;
-                time = time + " " + hours + "h";
+                time = time + " " + hours + hSymbol;
                 int hoursInMins = 60 * hours;
                 int minsLeft = leftOver - hoursInMins;
-                time = time + " " + minsLeft + "m";
+                time = time + " " + minsLeft + mSymbol;
             }
         }
 
-        if (secondsLeft > 0) time = time + " " + secondsLeft + "s";
+        if (secondsLeft > 0) time = time + " " + secondsLeft + sSymbol;
 
         return time;
     }

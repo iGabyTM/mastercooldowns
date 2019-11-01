@@ -51,9 +51,7 @@ public class Cooldown implements Serializable {
      * Get the player uuid
      * @return uuid
      */
-    public UUID getPlayerUuid() {
-        return uuid;
-    }
+    public UUID getPlayerUuid() { return uuid; }
 
     /**
      * Get the cooldown name
@@ -80,6 +78,14 @@ public class Cooldown implements Serializable {
     }
 
     /**
+     * Check if the cooldown is expired
+     * @return boolean
+     */
+    public boolean isExpired() {
+        return getExpiration() <= System.currentTimeMillis() / 1000L;
+    }
+
+    /**
      * Get the time left of a cooldown
      * @return time left
      */
@@ -95,7 +101,7 @@ public class Cooldown implements Serializable {
         if (getTimeLeft() <= 0) return "0s";
 
         long left = getExpiration() * 1000L - System.currentTimeMillis();
-        return TimeUtil.getTime((int) TimeUnit.MILLISECONDS.toSeconds( left));
+        return TimeUtil.getTime((int) TimeUnit.MILLISECONDS.toSeconds(left));
     }
 
     /**
@@ -113,7 +119,13 @@ public class Cooldown implements Serializable {
     }
 
     /**
-     * Set the cooldown new expiration time
+     * Set a new star time
+     * @param start time
+     */
+    public void setStart(long start) { this.start = start; }
+
+    /**
+     * Set a new expiration time
      * @param expiration new value
      */
     public void setExpiration(long expiration) {

@@ -19,19 +19,29 @@
 
 package me.gabytm.mastercooldowns.commands;
 
+import me.gabytm.mastercooldowns.MasterCooldowns;
 import me.gabytm.mastercooldowns.utils.Messages;
 import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
 import org.bukkit.command.CommandSender;
+import sun.nio.cs.ext.SJIS;
 
 @Command("mastercooldowns")
 @Alias({"cd", "mcd", "mcooldowns", "mcooldown"})
-public class HelpCommand extends CommandBase {
+public class ReloadCommand extends CommandBase {
+    private MasterCooldowns plugin;
 
-    @SubCommand("help")
-    @Alias("?")
+    public ReloadCommand(MasterCooldowns plugin) { this.plugin = plugin; }
+
+    @SubCommand("reload")
     @Permission("mastercooldowns.access")
     public void onCommand(CommandSender sender) {
-        sender.sendMessage(Messages.HELP.value());
+        try {
+            plugin.reloadConfig();
+            sender.sendMessage(Messages.RELOAD_INFO.value());
+        } catch (Exception e) {
+            e.printStackTrace();
+            sender.sendMessage(Messages.RELOAD_ERROR.value());
+        }
     }
 }

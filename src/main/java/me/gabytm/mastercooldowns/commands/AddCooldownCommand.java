@@ -23,11 +23,13 @@ import me.gabytm.mastercooldowns.MasterCooldowns;
 import me.gabytm.mastercooldowns.cooldown.Cooldown;
 import me.gabytm.mastercooldowns.cooldown.CooldownManager;
 import me.gabytm.mastercooldowns.utils.Messages;
+import me.gabytm.mastercooldowns.utils.NumberUtil;
 import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 @Command("mastercooldowns")
 @Alias({"cd", "mcd", "mcooldowns", "mcooldown"})
@@ -40,14 +42,47 @@ public class AddCooldownCommand extends CommandBase {
     @SubCommand("add")
     @Completion("#players")
     @Permission("mastercooldowns.access")
-    public void onCommand(CommandSender sender, String playerName, String cdName, Long cdDuration) {
+    public void onCommand(CommandSender sender, String to, String cdName, String cdDuration) {
         CooldownManager cooldownManager = plugin.getCooldownManager();
-        OfflinePlayer target = Bukkit.getOfflinePlayer(playerName);
-        long duration = System.currentTimeMillis() / 1000L + cdDuration;
+        long duration = System.currentTimeMillis() / 1000L + NumberUtil.durationToSeconds(cdDuration);
+        boolean onlineSendMessages = plugin.getConfig().getBoolean("settings.add.all.onlineSendMessages", true);
+        boolean offlineSendMessages = plugin.getConfig().getBoolean("settings.add.all.offlineSendMessages", true);
 
-        Cooldown cooldown = new Cooldown(target.getUniqueId(), cdName, System.currentTimeMillis() / 1000L, duration);
+        if (to.equals("*")) {
+            if (sender.getServer().getOnlinePlayers().size() == 0) {
+                sender.sendMessage(Messages.NO_ONLINE_PLAYERS.value());
+                return;
+            }
 
+            for (Player p : sender.getServer().getOnlinePlayers()) {
+                addCooldown(cooldownManager, sender, p, cdName, duration, onlineSendMessages);
+            }
+
+            return;
+        }
+
+        if (to.equals("**")) {
+            if (sender.getServer().getOfflinePlayers().length == 0) {
+                sender.sendMessage(Messages.NO_OFFLINE_PLAYERS.value());
+                return;
+            }
+
+            for (OfflinePlayer p : sender.getServer().getOfflinePlayers()) {
+                addCooldown(cooldownManager, sender, p, cdName, duration, offlineSendMessages);
+            }
+
+            return;
+        }
+
+        OfflinePlayer target = Bukkit.getOfflinePlayer(to);
+
+        addCooldown(cooldownManager, sender, target, cdName, duration, true);
+    }
+
+    private void addCooldown(CooldownManager cooldownManager, CommandSender sender, OfflinePlayer p, String name, long duration, boolean sendMessages) {
+        Cooldown cooldown = new Cooldown(p.getUniqueId(), name, System.currentTimeMillis() / 1000L, duration);
         cooldownManager.addCooldown(cooldown);
-        sender.sendMessage(Messages.ADD_INFO.format(cooldown));
+
+        if (sendMessages) sender.sendMessage(Messages.ADD_INFO.format(cooldown));
     }
 }

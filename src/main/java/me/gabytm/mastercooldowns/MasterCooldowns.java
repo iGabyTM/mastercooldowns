@@ -41,30 +41,33 @@ public final class MasterCooldowns extends JavaPlugin {
         cooldownManager = new CooldownManager();
         databaseManager = new DatabaseManager(this);
 
+        saveDefaultConfig();
+
         metrics.addCustomChart(new Metrics.SingleLineChart("cooldowns", () -> cooldownManager.getCooldownsList().size()));
 
         databaseManager.connect();
 
-        commandManager.register(new MasterCooldownsCommand());
+        commandManager.register(new MasterCooldownsCommand(this));
         commandManager.register(new AddCooldownCommand(this));
         commandManager.register(new CheckCooldownCommand(this));
-        commandManager.register(new HelpCommand());
         commandManager.register(new ListCooldownsCommand(this));
+        commandManager.register(new ReloadCommand(this));
         commandManager.register(new RemoveCooldownCommand(this));
 
         commandManager.getMessageHandler().register("cmd.no.permission", sender -> sender.sendMessage(Messages.NO_PERMISSION.value()));
         commandManager.getMessageHandler().register("cmd.wrong.usage", sender -> sender.sendMessage(Messages.INCORRECT_USAGE.value()));
         commandManager.getMessageHandler().register("cmd.no.exists", sender -> sender.sendMessage(Messages.UNKNOWN_COMMAND.value()));
 
-        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
             new PlaceholderAPIHook(this).register();
-            getLogger().info(StringUtil.colorize("&aPlaceholderAPI hook enabled."));
+
+            StringUtil.infoLog(this, "&aPlaceholderAPI hook enabled.");
         }
     }
 
     @Override
     public void onDisable() {
-        databaseManager.saveCooldowns(getCooldownManager().getCooldownsList(), getCooldownManager());
+        databaseManager.saveCooldowns(getCooldownManager().getCooldownsList());
         HandlerList.unregisterAll(this);
         getServer().getScheduler().cancelTasks(this);
     }

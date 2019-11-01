@@ -19,21 +19,33 @@
 
 package me.gabytm.mastercooldowns.commands;
 
+import me.gabytm.mastercooldowns.MasterCooldowns;
 import me.gabytm.mastercooldowns.utils.Messages;
-import me.mattstudios.mf.annotations.Alias;
-import me.mattstudios.mf.annotations.Command;
-import me.mattstudios.mf.annotations.Default;
-import me.mattstudios.mf.annotations.Permission;
+import me.gabytm.mastercooldowns.utils.StringUtil;
+import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 @Command("mastercooldowns")
-@Alias({"mcd", "mcooldowns", "mcooldown"})
+@Alias({"cd", "mcd", "mcooldowns", "mcooldown"})
 public class MasterCooldownsCommand extends CommandBase {
+    private MasterCooldowns plugin;
+
+    public MasterCooldownsCommand(MasterCooldowns plugin) { this.plugin = plugin; }
 
     @Default
     @Permission("mastercooldowns.access")
-    public void onCommand(CommandSender sender) {
-        sender.sendMessage(Messages.HELP.value());
+    public void onDefaultCommand(CommandSender sender) {
+        if (sender instanceof Player) StringUtil.sendHelpMessage((Player) sender);
+        else sender.sendMessage(Messages.HELP.value());
+    }
+
+    @SubCommand("help")
+    @Alias("?")
+    @Permission("mastercooldowns.access")
+    public void onHelpCommand(CommandSender sender) {
+        if (sender instanceof Player) StringUtil.sendHelpMessage((Player) sender);
+        else sender.sendMessage(Messages.HELP.value());
     }
 }

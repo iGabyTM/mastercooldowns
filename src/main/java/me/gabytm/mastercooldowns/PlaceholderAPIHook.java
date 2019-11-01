@@ -20,9 +20,9 @@
 package me.gabytm.mastercooldowns;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import me.clip.placeholderapi.util.TimeUtil;
 import me.gabytm.mastercooldowns.cooldown.Cooldown;
 import me.gabytm.mastercooldowns.cooldown.CooldownManager;
+import me.gabytm.mastercooldowns.utils.TimeUtil;
 import org.bukkit.OfflinePlayer;
 
 import java.util.concurrent.TimeUnit;
@@ -36,7 +36,7 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
     @Override
     public String getAuthor() {
-        return "GabyTM";
+        return plugin.getDescription().getAuthors().toString();
     }
 
     @Override
@@ -50,36 +50,36 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
     }
 
     @Override
+    public boolean persist() { return true; }
+
+    @Override
     public String onRequest(OfflinePlayer p, String param){
         CooldownManager cooldownManager = plugin.getCooldownManager();
 
         if (param.toLowerCase().startsWith("left_formatted_")) {
-            String[] input = param.toLowerCase().split("left_formatted_");
+            String name = param.toLowerCase().split("left_formatted_")[1];
+            String empty = plugin.getConfig().getString("placeholders.formatted.empty", "");
+            Cooldown cooldown = cooldownManager.getCooldownByName(p.getUniqueId(), name);
 
-            if (input.length >= 2) {
-                Cooldown cooldown = cooldownManager.getCooldownByName(p.getUniqueId(), input[1]);
-
-                if (cooldown == null) return "0";
-
+            if (cooldown != null && !cooldown.isExpired()) {
                 long left = cooldown.getExpiration() * 1000L - System.currentTimeMillis();
 
-                return left <= 0 ? "0" : TimeUtil.getTime((int) TimeUnit.MILLISECONDS.toSeconds( left));
+                return TimeUtil.getTime((int) TimeUnit.MILLISECONDS.toSeconds( left));
             }
 
-            return "0";
+            return empty;
         }
 
         if (param.toLowerCase().startsWith("left_")) {
-            String[] input = param.toLowerCase().split("left_");
+            String name = param.toLowerCase().split("left_")[1];
+            String empty = plugin.getConfig().getString("placeholders.empty", "");
+            Cooldown cooldown = cooldownManager.getCooldownByName(p.getUniqueId(), name);
 
-            if (input.length >= 2) {
-                Cooldown cooldown = cooldownManager.getCooldownByName(p.getUniqueId(), input[1]);
+            if (cooldown != null && !cooldown.isExpired()) return String.valueOf(cooldown.getTimeLeft());
 
-                return cooldown != null ? String.valueOf(cooldown.getTimeLeft()) : "0";
-            }
-
-            return "0";
+            return empty;
         }
+
 
         return null;
     }
