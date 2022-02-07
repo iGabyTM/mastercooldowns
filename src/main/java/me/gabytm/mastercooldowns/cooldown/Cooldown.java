@@ -101,7 +101,7 @@ public class Cooldown implements Serializable {
         if (getTimeLeft() <= 0) return "0s";
 
         long left = getExpiration() * 1000L - System.currentTimeMillis();
-        return TimeUtil.getTime((int) TimeUnit.MILLISECONDS.toSeconds(left));
+        return TimeUtil.format((int) TimeUnit.MILLISECONDS.toSeconds(left));
     }
 
     /**

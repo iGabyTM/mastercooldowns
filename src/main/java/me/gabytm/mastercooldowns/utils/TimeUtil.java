@@ -22,58 +22,40 @@
 package me.gabytm.mastercooldowns.utils;
 
 import me.gabytm.mastercooldowns.MasterCooldowns;
+import org.bukkit.configuration.file.FileConfiguration;
 
 public class TimeUtil {
-    public static String getTime(int seconds) {
-        MasterCooldowns plugin = MasterCooldowns.getPlugin(MasterCooldowns.class);
-        String sSymbol = plugin.getConfig().getString("placeholders.formatted.seconds", "s");
-        String mSymbol = plugin.getConfig().getString("placeholders.formatted.minutes", "m");
-        String hSymbol = plugin.getConfig().getString("placeholders.formatted.hours", "h");
-        String dSymbol = plugin.getConfig().getString("placeholders.formatted.days", "d");
 
-        if (seconds < 60) return seconds + sSymbol;
+    private static final MasterCooldowns plugin = MasterCooldowns.getPlugin(MasterCooldowns.class);
 
-        int minutes = seconds / 60;
-        int s = 60 * minutes;
-        int secondsLeft = seconds - s;
-
-        if (minutes < 60) return secondsLeft > 0 ? minutes + mSymbol + " " + secondsLeft + sSymbol : minutes + mSymbol;
-
-        String time;
-        int days;
-        int inMins;
-        int leftOver;
-
-        if (minutes < 1440) {
-            days = minutes / 60;
-            time = days + hSymbol;
-            inMins = 60 * days;
-            leftOver = minutes - inMins;
-
-            if (leftOver >= 1) time = time + " " + leftOver + mSymbol;
-            if (secondsLeft > 0) time = time + " " + secondsLeft + sSymbol;
-
-            return time;
+    private static void append(final StringBuilder builder, final long duration, final String prefix) {
+        if (duration == 0) {
+            return;
         }
 
-        days = minutes / 1440;
-        time = days + dSymbol;
-        inMins = 1440 * days;
-        leftOver = minutes - inMins;
-
-        if (leftOver >= 1) {
-            if (leftOver < 60) time = time + " " + leftOver + "m";
-            else {
-                int hours = leftOver / 60;
-                time = time + " " + hours + hSymbol;
-                int hoursInMins = 60 * hours;
-                int minsLeft = leftOver - hoursInMins;
-                time = time + " " + minsLeft + mSymbol;
-            }
+        if (builder.length() > 0) {
+            builder.append(' ');
         }
 
-        if (secondsLeft > 0) time = time + " " + secondsLeft + sSymbol;
+        builder.append(duration).append(prefix);
+    }
 
-        return time;
+    public static String format(final long time) {
+        final FileConfiguration config = plugin.getConfig();
+
+        if (time < 60) return time + config.getString("placeholders.formatted.days", "d");
+
+        final long seconds = time;
+        final long minutes = seconds / 60;
+        final long hours = minutes / 60;
+        final long days = hours / 24;
+
+        final StringBuilder builder = new StringBuilder();
+        append(builder, days, config.getString("placeholders.formatted.days", "d"));
+        append(builder, hours % 24, config.getString("placeholders.formatted.hours", "h"));
+        append(builder, minutes % 60, config.getString("placeholders.formatted.minutes", "m"));
+        append(builder, seconds % 60, config.getString("placeholders.formatted.seconds", "s"));
+
+        return builder.toString();
     }
 }

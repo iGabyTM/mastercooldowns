@@ -32,7 +32,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.2.4</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -44,32 +44,14 @@
                             <relocations>
                                 <relocation>
                                     <pattern>org.bstats</pattern>
-                                    <shadedPattern>me.gabytm.mastercooldowns</shadedPattern>
+                                    <shadedPattern>me.gabytm.mastercooldowns.libs.bstats</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>me.mattstudios.mf</pattern>
+                                    <shadedPattern>me.gabytm.mastercooldowns.libs.commands</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.1</version>
-                <configuration>
-                    <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
-                    <relocations>
-                        <relocation>
-                            <pattern>me.mattstudios.mf</pattern>
-                            <shadedPattern>me.gabytm.mastercooldowns.mf</shadedPattern>
-                        </relocation>
-                    </relocations>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -92,7 +74,7 @@
         </repository>
         <repository>
             <id>placeholderapi</id>
-            <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
         <repository>
             <id>CodeMC</id>
@@ -100,7 +82,7 @@
         </repository>
         <repository>
             <id>PiggyPiglet</id>
-            <url>https://repo.piggypiglet.me/repository/maven-releases/</url>
+            <url>https://repo.piggypiglet.me/releases</url>
         </repository>
         <repository>
             <id>rayzr-repo</id>
@@ -124,13 +106,13 @@
         <dependency>
             <groupId>me.clip</groupId>
             <artifactId>placeholderapi</artifactId>
-            <version>2.10.4</version>
+            <version>2.11.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>1.5</version>
+            <version>3.0.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

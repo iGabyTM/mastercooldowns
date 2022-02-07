@@ -21,29 +21,31 @@ package me.gabytm.mastercooldowns;
 
 import me.gabytm.mastercooldowns.commands.*;
 import me.gabytm.mastercooldowns.cooldown.CooldownManager;
-import me.gabytm.mastercooldowns.utils.Messages;
 import me.gabytm.mastercooldowns.database.DatabaseManager;
+import me.gabytm.mastercooldowns.utils.Messages;
 import me.gabytm.mastercooldowns.utils.StringUtil;
 import me.mattstudios.mf.base.CommandManager;
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MasterCooldowns extends JavaPlugin {
+
     private CooldownManager cooldownManager;
     private DatabaseManager databaseManager;
 
     @Override
     public void onEnable() {
-        Metrics metrics = new Metrics(this);
+        Metrics metrics = new Metrics(this, 5794);
         CommandManager commandManager = new CommandManager(this);
         cooldownManager = new CooldownManager();
         databaseManager = new DatabaseManager(this);
 
         saveDefaultConfig();
 
-        metrics.addCustomChart(new Metrics.SingleLineChart("cooldowns", () -> cooldownManager.getCooldownsList().size()));
+        metrics.addCustomChart(new SingleLineChart("cooldowns", cooldownManager.getCooldownsList()::size));
 
         databaseManager.connect();
 
@@ -60,7 +62,6 @@ public final class MasterCooldowns extends JavaPlugin {
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
             new PlaceholderAPIHook(this).register();
-
             StringUtil.infoLog(this, "&aPlaceholderAPI hook enabled.");
         }
     }

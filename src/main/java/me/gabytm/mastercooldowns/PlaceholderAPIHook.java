@@ -24,62 +24,63 @@ import me.gabytm.mastercooldowns.cooldown.Cooldown;
 import me.gabytm.mastercooldowns.cooldown.CooldownManager;
 import me.gabytm.mastercooldowns.utils.TimeUtil;
 import org.bukkit.OfflinePlayer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.TimeUnit;
 
 public class PlaceholderAPIHook extends PlaceholderExpansion {
-    private MasterCooldowns plugin;
+
+    private final MasterCooldowns plugin;
 
     public PlaceholderAPIHook(MasterCooldowns plugin) {
         this.plugin = plugin;
     }
 
     @Override
-    public String getAuthor() {
-        return plugin.getDescription().getAuthors().toString();
+    public @NotNull String getAuthor() {
+        return String.join(", ", plugin.getDescription().getAuthors());
     }
 
     @Override
-    public String getIdentifier() {
+    public @NotNull String getIdentifier() {
         return "mcd";
     }
 
     @Override
-    public String getVersion() {
+    public @NotNull String getVersion() {
         return plugin.getDescription().getVersion();
     }
 
     @Override
-    public boolean persist() { return true; }
+    public boolean persist() {
+        return true;
+    }
 
     @Override
-    public String onRequest(OfflinePlayer p, String param){
-        CooldownManager cooldownManager = plugin.getCooldownManager();
+    public @Nullable String onRequest(OfflinePlayer p, String param) {
+        final CooldownManager cooldownManager = plugin.getCooldownManager();
 
         if (param.toLowerCase().startsWith("left_formatted_")) {
-            String name = param.toLowerCase().split("left_formatted_")[1];
-            String empty = plugin.getConfig().getString("placeholders.formatted.empty", "");
-            Cooldown cooldown = cooldownManager.getCooldownByName(p.getUniqueId(), name);
+            final String name = param.toLowerCase().split("left_formatted_")[1];
+            final Cooldown cooldown = cooldownManager.getCooldownByName(p.getUniqueId(), name);
 
             if (cooldown != null && !cooldown.isExpired()) {
-                long left = cooldown.getExpiration() * 1000L - System.currentTimeMillis();
-
-                return TimeUtil.getTime((int) TimeUnit.MILLISECONDS.toSeconds( left));
+                final long left = TimeUnit.SECONDS.toMillis(cooldown.getExpiration()) - System.currentTimeMillis();
+                return TimeUtil.format(TimeUnit.MILLISECONDS.toSeconds(left));
             }
 
-            return empty;
+            return plugin.getConfig().getString("placeholders.formatted.empty", "");
         }
 
         if (param.toLowerCase().startsWith("left_")) {
-            String name = param.toLowerCase().split("left_")[1];
-            String empty = plugin.getConfig().getString("placeholders.empty", "");
-            Cooldown cooldown = cooldownManager.getCooldownByName(p.getUniqueId(), name);
+            final String name = param.toLowerCase().split("left_")[1];
+            final Cooldown cooldown = cooldownManager.getCooldownByName(p.getUniqueId(), name);
 
             if (cooldown != null && !cooldown.isExpired()) return String.valueOf(cooldown.getTimeLeft());
 
-            return empty;
+            return plugin.getConfig().getString("placeholders.empty", "");
         }
-
 
         return null;
     }
