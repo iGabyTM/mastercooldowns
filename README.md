@@ -1,9 +1,7 @@
 ## Master Cooldowns
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/53eb57fc49234a5ca081a2388bf874f2)](https://www.codacy.com/manual/iGabyTM/MasterCooldowns?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=iGabyTM/MasterCooldowns&amp;utm_campaign=Badge_Grade)
 
 ## Download
 - [Mc-Market](https://www.mc-market.org/resources/12592/)
-- [Songoda](https://songoda.com/marketplace/product/148)
 - [SpigotMC](https://www.spigotmc.org/resources/72145/)
 
 ## Commands
@@ -36,12 +34,12 @@ The default config can be found [here](iGabyTM/MasterCooldowns/tree/master/src/m
 <details>
   <summary>DeluxeMenus Rewards GUI</summary>
   
-  ```yaml
-menu_title: '&rDaily Rewards'
-inventory_type: HOPPER
-open_command: rewards
-update_interval: 1
-items:
+```yaml
+  menu_title: '&rDaily Rewards'
+  inventory_type: HOPPER
+  open_command: rewards
+  update_interval: 1
+  items:
     glass:
       material: STAINED_GLASS_PANE
       data: 7
@@ -52,7 +50,7 @@ items:
         - 4
       display_name: ' '
     available:
-      material: 'STORAGE_MINECART'
+      material: STORAGE_MINECART
       slot: 2
       priority: 1
       view_requirement:
@@ -65,13 +63,13 @@ items:
       lore:
         - ''
         - '&aRight Click &7to claim!'
-      right_click_commands:
+      click_commands:
         - '[console] mcd add %player_name% daily_reward 86400'
         - '[console] eco give %player_name% 10000'
         - '[close]'
         - '[message] &2&l[!] &aYou have claimed your daily reward, come back tomorrow for more!'
     on_cooldown:
-      material: 'MINECART'
+      material: MINECART
       slot: 2
       priority: 2
       update: true
