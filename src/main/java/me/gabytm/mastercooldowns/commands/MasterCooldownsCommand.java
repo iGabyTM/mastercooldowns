@@ -20,32 +20,76 @@
 package me.gabytm.mastercooldowns.commands;
 
 import me.gabytm.mastercooldowns.MasterCooldowns;
-import me.gabytm.mastercooldowns.utils.Messages;
-import me.gabytm.mastercooldowns.utils.StringUtil;
-import me.mattstudios.mf.annotations.*;
+import me.mattstudios.mf.annotations.Alias;
+import me.mattstudios.mf.annotations.Command;
+import me.mattstudios.mf.annotations.Default;
+import me.mattstudios.mf.annotations.Permission;
+import me.mattstudios.mf.annotations.SubCommand;
 import me.mattstudios.mf.base.CommandBase;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.PluginDescriptionFile;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+
+import static net.kyori.adventure.text.Component.text;
 
 @Command("mastercooldowns")
 @Alias({"cd", "mcd", "mcooldowns", "mcooldown"})
 public class MasterCooldownsCommand extends CommandBase {
-    private MasterCooldowns plugin;
 
-    public MasterCooldownsCommand(MasterCooldowns plugin) { this.plugin = plugin; }
+    private MasterCooldowns plugin;
+    private Component helpMessage;
+
+    public MasterCooldownsCommand(MasterCooldowns plugin) {
+        this.plugin = plugin;
+
+        try (final InputStreamReader reader = new InputStreamReader(plugin.getResource("commands.yml"))) {
+            final PluginDescriptionFile description = plugin.getDescription();
+
+            final YamlConfiguration yaml = YamlConfiguration.loadConfiguration(reader);
+            final Component header = MiniMessage.miniMessage().deserialize(
+                    String.format(yaml.getString("header"), description.getVersion(), String.join(", ", description.getAuthors()))
+            );
+            final List<Component> commands = new ArrayList<>();
+
+            for (final String section : yaml.getConfigurationSection("commands").getKeys(false)) {
+                final String commandDescription = yaml.getString("commands." + section + ".description");
+                final String hover = String.join("<br>", yaml.getStringList("commands." + section + ".hover"));
+                final String command = yaml.getString("commands." + section + ".command");
+
+                commands.add(
+                        MiniMessage.miniMessage().deserialize(commandDescription)
+                                .hoverEvent(MiniMessage.miniMessage().deserialize(hover))
+                                .clickEvent(ClickEvent.runCommand(command))
+                );
+            }
+
+            this.helpMessage = text().append(header).append(commands).build();
+        } catch (IOException e) {
+            plugin.getLogger().log(Level.SEVERE, "Could not load the help message from commands.yml", e);
+            this.helpMessage = text("Could not load the help message from commands.yml");
+        }
+    }
 
     @Default
     @Permission("mastercooldowns.access")
     public void onDefaultCommand(CommandSender sender) {
-        if (sender instanceof Player) StringUtil.sendHelpMessage((Player) sender);
-        else sender.sendMessage(Messages.HELP.value());
+        plugin.getAudiences().sender(sender).sendMessage(helpMessage);
     }
 
     @SubCommand("help")
     @Alias("?")
     @Permission("mastercooldowns.access")
     public void onHelpCommand(CommandSender sender) {
-        if (sender instanceof Player) StringUtil.sendHelpMessage((Player) sender);
-        else sender.sendMessage(Messages.HELP.value());
+        plugin.getAudiences().sender(sender).sendMessage(helpMessage);
     }
+
 }

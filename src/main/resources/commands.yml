@@ -1,0 +1,56 @@
+header: <red>MasterCooldowns <white>v%s <red>by <white>%s<br><br>
+commands:
+  add:
+    description: <red> /mcd add <white>[player] [id┃*┃**] [duration]<br>
+    hover:
+      - '<dark_gray><b>!</b> <gray>Add a new cooldown, if the id is already in use the cooldown will be overridden, use <white>* <gray>to select all online players or <white>** <gray>for all offline players. The duration is in seconds, it also support the following formats:'
+      - ' '
+      - '<dark_gray> • <gray>Second: <white>s, sec, secs, second, seconds'
+      - '<dark_gray> • <gray>Minute: <white>m, min, mins, minute, minutes'
+      - '<dark_gray> • <gray>Hour: <white>h, hr, hrs, hour, hours'
+      - '<dark_gray> • <gray>Day: <white>d, dy, dys, day, days'
+      - '<dark_gray> • <gray>Week: <white>w, week, weeks'
+      - '<dark_gray> • <gray>Month: <white>mo, mon, mnth, month, months'
+      - '<dark_gray> • <gray>Year: <white>y, yr, yrs, year, years'
+      - ' '
+      - <red>/mcd add <white>[player] example 5400
+      - <red>/mcd add <white>[player] example 1h30m
+      - <red>/mcd add <white>* example 10m
+    command: '/mcd add'
+  remove:
+    description: <red> /mcd remove <white>[player┃*┃**] [id┃all]<br>
+    hover: 
+      - <dark_gray><b>!</b> <gray>Use <white>* <gray>to select all online players or <white>** <gray>for all offline players and <white>all <gray>as id to select all cooldowns
+      - ' '
+      - <red>/mcd remove <white>[player] example
+      - <red>/mcd remove <white>[player] all
+    command: /mcd remove
+  check:
+    description: <red> /mcd check <white>[player] [id]<br>
+    hover:
+      - <dark_gray><b>!</b> <gray>Check the time left of a cooldown
+      - ' '
+      - <red>/mcd check <white>[player] example
+    command: '/mcd check'
+  list:
+    description: <red> /mcd list <white>[player]<br>
+    hover:
+      - <dark_gray><b>!</b> <gray>A list with the active cooldowns of a player
+      - ' '
+      - <red>/mcd list <white>[player]
+    command: '/mcd list'
+  reload:
+    description: <red> /mcd reload<br>
+    hover:
+      - <dark_gray><b>!</b> <gray>Reload the config
+      - ' '
+      - <red>/mcd reload
+    command: '/mcd reload'
+  help:
+    description: <red> /mcd help<br>
+    hover:
+      - <dark_gray><b>!</b> <gray>Display the commands list
+      - ' '
+      - <red>/mcd help
+      - <red>/mcd ?
+    command: '/mcd help'

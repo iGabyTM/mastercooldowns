@@ -19,22 +19,26 @@
 
 package me.gabytm.mastercooldowns;
 
+import me.gabytm.mastercooldowns.api.MasterCooldownsAPI;
 import me.gabytm.mastercooldowns.commands.*;
 import me.gabytm.mastercooldowns.cooldown.CooldownManager;
 import me.gabytm.mastercooldowns.database.DatabaseManager;
 import me.gabytm.mastercooldowns.utils.Messages;
 import me.gabytm.mastercooldowns.utils.StringUtil;
 import me.mattstudios.mf.base.CommandManager;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class MasterCooldowns extends JavaPlugin {
 
     private CooldownManager cooldownManager;
     private DatabaseManager databaseManager;
+    private BukkitAudiences audiences;
 
     @Override
     public void onEnable() {
@@ -42,6 +46,7 @@ public final class MasterCooldowns extends JavaPlugin {
         CommandManager commandManager = new CommandManager(this);
         cooldownManager = new CooldownManager();
         databaseManager = new DatabaseManager(this);
+        audiences = BukkitAudiences.create(this);
 
         saveDefaultConfig();
 
@@ -60,10 +65,12 @@ public final class MasterCooldowns extends JavaPlugin {
         commandManager.getMessageHandler().register("cmd.wrong.usage", sender -> sender.sendMessage(Messages.INCORRECT_USAGE.value()));
         commandManager.getMessageHandler().register("cmd.no.exists", sender -> sender.sendMessage(Messages.UNKNOWN_COMMAND.value()));
 
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
+        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null){
             new PlaceholderAPIHook(this).register();
             StringUtil.infoLog(this, "&aPlaceholderAPI hook enabled.");
         }
+
+        getServer().getServicesManager().register(MasterCooldownsAPI.class, new MasterCooldownsAPI(this), this, ServicePriority.Highest);
     }
 
     @Override
@@ -76,4 +83,9 @@ public final class MasterCooldowns extends JavaPlugin {
     public CooldownManager getCooldownManager() {
         return cooldownManager;
     }
+
+    public BukkitAudiences getAudiences() {
+        return audiences;
+    }
+
 }

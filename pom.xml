@@ -6,7 +6,7 @@
 
     <groupId>me.gabytm</groupId>
     <artifactId>MasterCooldowns</artifactId>
-    <version>1.3</version>
+    <version>1.4</version>
     <packaging>jar</packaging>
 
     <name>MasterCooldowns</name>
@@ -49,6 +49,10 @@
                                 <relocation>
                                     <pattern>me.mattstudios.mf</pattern>
                                     <shadedPattern>me.gabytm.mastercooldowns.libs.commands</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>net.kyori</pattern>
+                                    <shadedPattern>me.gabytm.mastercooldowns.libs.kyori</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -122,9 +126,16 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>me.rayzr522</groupId>
-            <artifactId>jsonmessage</artifactId>
-            <version>1.2.0</version>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-platform-bukkit</artifactId>
+            <version>4.1.1</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-text-minimessage</artifactId>
+            <version>4.11.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

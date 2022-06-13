@@ -26,7 +26,12 @@ import java.util.List;
 import java.util.UUID;
 
 public class MasterCooldownsAPI {
-    private MasterCooldowns plugin;
+
+    private final MasterCooldowns plugin;
+
+    public MasterCooldownsAPI(MasterCooldowns plugin) {
+        this.plugin = plugin;
+    }
 
     /**
      * Add a cooldown to the cooldownsList list

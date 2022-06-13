@@ -21,10 +21,12 @@ package me.gabytm.mastercooldowns.commands;
 
 import me.gabytm.mastercooldowns.MasterCooldowns;
 import me.gabytm.mastercooldowns.utils.Messages;
-import me.mattstudios.mf.annotations.*;
+import me.mattstudios.mf.annotations.Alias;
+import me.mattstudios.mf.annotations.Command;
+import me.mattstudios.mf.annotations.Permission;
+import me.mattstudios.mf.annotations.SubCommand;
 import me.mattstudios.mf.base.CommandBase;
 import org.bukkit.command.CommandSender;
-import sun.nio.cs.ext.SJIS;
 
 @Command("mastercooldowns")
 @Alias({"cd", "mcd", "mcooldowns", "mcooldown"})

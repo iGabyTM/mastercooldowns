@@ -60,11 +60,11 @@ public enum Messages {
     private final JavaPlugin PLUGIN = JavaPlugin.getProvidingPlugin(MasterCooldowns.class);
 
     Messages(String value) {
-        this.value = value.replaceAll("\\{prefix}", "&cMCD &8┃");
+        this.value = value.replace("{prefix}", "&cMCD &8┃");
     }
 
     public String value() {
-        return StringUtil.colorize(value.replaceAll("\\{version}", PLUGIN.getDescription().getVersion()));
+        return StringUtil.colorize(value.replace("{version}", PLUGIN.getDescription().getVersion()));
     }
 
     public String format(Cooldown cd) {
