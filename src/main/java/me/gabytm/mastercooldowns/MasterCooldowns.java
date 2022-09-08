@@ -42,16 +42,13 @@ public final class MasterCooldowns extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Metrics metrics = new Metrics(this, 5794);
+        new Metrics(this, 5794);
         CommandManager commandManager = new CommandManager(this);
         cooldownManager = new CooldownManager();
         databaseManager = new DatabaseManager(this);
         audiences = BukkitAudiences.create(this);
 
         saveDefaultConfig();
-
-        metrics.addCustomChart(new SingleLineChart("cooldowns", cooldownManager.getCooldownsList()::size));
-
         databaseManager.connect();
 
         commandManager.register(new MasterCooldownsCommand(this));
