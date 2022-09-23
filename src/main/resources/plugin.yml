@@ -1,6 +1,8 @@
 name: MasterCooldowns
 version: ${project.version}
 main: me.gabytm.mastercooldowns.MasterCooldowns
+api-version: '1.13'
+
 softdepend: [PlaceholderAPI]
 authors: [GabyTM]
 website: https://gabytm.me/
