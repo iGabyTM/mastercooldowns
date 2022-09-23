@@ -56,41 +56,41 @@ public enum Messages {
     LIST_HEADER("{prefix} &c{player}'s &7active cooldowns:\n"),
     UNKNOWN_COMMAND("{prefix} &7Unknown command, type &c/mcd help &7for help.");
 
-    private String value;
-    private final JavaPlugin PLUGIN = JavaPlugin.getProvidingPlugin(MasterCooldowns.class);
+    private final String value;
 
     Messages(String value) {
-        this.value = value.replace("{prefix}", "&cMCD &8┃");
+        this.value = StringUtil.colorize(
+                value
+                        .replace("{prefix}", "&cMCD &8┃")
+                        .replace("{version}", JavaPlugin.getProvidingPlugin(MasterCooldowns.class).getDescription().getVersion())
+        );
     }
 
     public String value() {
-        return StringUtil.colorize(value.replace("{version}", PLUGIN.getDescription().getVersion()));
+        return this.value;
     }
 
     public String format(Cooldown cd) {
-        String msg = value
-                .replaceAll("\\{player}", cd.getPlayer().getName())
-                .replaceAll("\\{id}", cd.getName().toLowerCase())
-                .replaceAll("\\{left}", String.valueOf(cd.getTimeLeft()))
-                .replaceAll("\\{leftFormatted}", cd.getTimeLeftFormatted());
-        return StringUtil.colorize(msg);
+        return value()
+                .replace("{player}", cd.getPlayer().getName())
+                .replace("{id}", cd.getName().toLowerCase())
+                .replace("{left}", String.valueOf(cd.getTimeLeft()))
+                .replace("{leftFormatted}", cd.getTimeLeftFormatted());
     }
 
     public String format(int amount, OfflinePlayer player) {
-        String msg = value
-                .replaceAll("\\{amount}", String.valueOf(amount))
-                .replaceAll("\\{player}", player.getName());
-        return StringUtil.colorize(msg);
+        return value()
+                .replace("{amount}", String.valueOf(amount))
+                .replace("{player}", player.getName());
     }
 
     public String format(OfflinePlayer player) {
-        return StringUtil.colorize(value.replaceAll("\\{player}", player.getName()));
+        return value().replace("{player}", player.getName());
     }
 
     public String format(String id, OfflinePlayer player) {
-        String msg = value
-                .replaceAll("\\{id}", id)
-                .replaceAll("\\{player}", player.getName());
-        return StringUtil.colorize(msg);
+        return value()
+                .replace("{id}", id)
+                .replace("{player}", player.getName());
     }
 }
