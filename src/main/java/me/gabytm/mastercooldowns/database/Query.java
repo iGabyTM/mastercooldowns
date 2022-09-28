@@ -19,7 +19,7 @@
 
 package me.gabytm.mastercooldowns.database;
 
-public enum Queries {
+enum Query {
     CREATE_TABLE("CREATE TABLE IF NOT EXISTS cooldowns (\n" +
             "     uuid text NOT NULL,\n" +
             "     name text NOT NULL,\n" +
@@ -29,14 +29,14 @@ public enum Queries {
             "     )"),
     LOAD_DELETE("DELETE FROM cooldowns WHERE uuid = ? AND name = ?"),
     LOAD_SELECT("SELECT * FROM cooldowns"),
-    SAVE_CHECK("SELECT * FROM cooldowns WHERE uuid = ? AND name = ? LIMIT 1"),
+    SAVE_CHECK("SELECT start FROM cooldowns WHERE uuid = ? AND name = ? LIMIT 1"),
     SAVE_DELETE("DELETE FROM cooldowns WHERE uuid = ? AND name = ?"),
     SAVE_INSERT("INSERT INTO cooldowns (uuid, name, start, expiration) VALUES (?, ?, ?, ?)"),
     SAVE_UPDATE("UPDATE cooldowns SET start = ?, expiration = ? WHERE uuid = ? AND name = ?");
 
-    private String value;
+    private final String value;
 
-    Queries(String value) { this.value = value; }
+    Query(String value) { this.value = value; }
 
     public String value() { return value; }
 }

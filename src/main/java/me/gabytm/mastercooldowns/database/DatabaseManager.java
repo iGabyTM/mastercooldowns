@@ -26,8 +26,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
 public class DatabaseManager {
     private MasterCooldowns plugin;
@@ -89,7 +95,7 @@ public class DatabaseManager {
      */
     private void createTable(Connection connection) {
         try {
-            PreparedStatement statement = connection.prepareStatement(Queries.CREATE_TABLE.value());
+            PreparedStatement statement = connection.prepareStatement(Query.CREATE_TABLE.value());
 
             statement.executeUpdate();
             statement.close();
@@ -109,7 +115,7 @@ public class DatabaseManager {
             Connection connection = DriverManager.getConnection(uri);
 
             if (connection != null) {
-                PreparedStatement select = connection.prepareStatement(Queries.LOAD_SELECT.value());
+                PreparedStatement select = connection.prepareStatement(Query.LOAD_SELECT.value());
 
                 select.execute();
 
@@ -122,7 +128,7 @@ public class DatabaseManager {
                     long expiration = selectResult.getLong("expiration");
 
                     if (expiration <= System.currentTimeMillis() / 1000L) {
-                        PreparedStatement delete = connection.prepareStatement(Queries.LOAD_DELETE.value());
+                        PreparedStatement delete = connection.prepareStatement(Query.LOAD_DELETE.value());
 
                         delete.setString(1, uuid.toString());
                         delete.setString(2, name);
@@ -164,7 +170,7 @@ public class DatabaseManager {
             for (Cooldown cd : cooldowns) {
                 if (connection != null) {
                     if (cd.isExpired()) {
-                        PreparedStatement delete = connection.prepareStatement(Queries.SAVE_DELETE.value());
+                        PreparedStatement delete = connection.prepareStatement(Query.SAVE_DELETE.value());
 
                         delete.setString(1, cd.getPlayerUuid().toString());
                         delete.setString(2, cd.getName());
@@ -174,7 +180,7 @@ public class DatabaseManager {
                         continue;
                     }
 
-                    PreparedStatement check = connection.prepareStatement(Queries.SAVE_CHECK.value());
+                    PreparedStatement check = connection.prepareStatement(Query.SAVE_CHECK.value());
 
                     check.setString(1, cd.getPlayerUuid().toString());
                     check.setString(2, cd.getName());
@@ -183,7 +189,7 @@ public class DatabaseManager {
                     ResultSet checkResult = check.getResultSet();
 
                     if (!checkResult.next()) {
-                        PreparedStatement insert = connection.prepareStatement(Queries.SAVE_INSERT.value());
+                        PreparedStatement insert = connection.prepareStatement(Query.SAVE_INSERT.value());
 
                         insert.setString(1, cd.getPlayerUuid().toString());
                         insert.setString(2, cd.getName());
@@ -194,7 +200,7 @@ public class DatabaseManager {
                         continue;
                     }
 
-                    PreparedStatement update = connection.prepareStatement(Queries.SAVE_UPDATE.value());
+                    PreparedStatement update = connection.prepareStatement(Query.SAVE_UPDATE.value());
 
                     update.setLong(1, cd.getStart());
                     update.setLong(2, cd.getExpiration());
