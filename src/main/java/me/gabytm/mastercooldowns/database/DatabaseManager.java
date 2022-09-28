@@ -19,10 +19,13 @@
 
 package me.gabytm.mastercooldowns.database;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import me.gabytm.mastercooldowns.MasterCooldowns;
 import me.gabytm.mastercooldowns.cooldown.Cooldown;
 import me.gabytm.mastercooldowns.utils.StringUtil;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,9 +34,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class DatabaseManager {
     private MasterCooldowns plugin;
@@ -80,7 +85,7 @@ public class DatabaseManager {
 
                 new BukkitRunnable() {
                     public void run() {
-                        saveCooldowns(plugin.getCooldownManager().getCooldownsList());
+                        saveCooldowns(plugin.getCooldownManager().getLoadedCooldowns());
                     }
                 }.runTaskTimerAsynchronously(plugin, 12000L, 12000L);
             }
@@ -108,69 +113,73 @@ public class DatabaseManager {
      * Load the data from database and store it on a map
      * @return cooldownsList
      */
-    private List<Cooldown> loadCooldowns() {
-        List<Cooldown> cooldownsList = new LinkedList<>();
+    private Table<UUID, String, Cooldown> loadCooldowns() {
+        final Table<UUID, String, Cooldown> table = HashBasedTable.create();
 
         try {
-            Connection connection = DriverManager.getConnection(uri);
+            final Connection connection = DriverManager.getConnection(uri);
 
             if (connection != null) {
-                PreparedStatement select = connection.prepareStatement(Query.LOAD_SELECT.value());
-
+                final PreparedStatement select = connection.prepareStatement(Query.LOAD_SELECT.value());
                 select.execute();
 
-                ResultSet selectResult = select.getResultSet();
+                final ResultSet resultSet = select.getResultSet();
 
-                while (selectResult.next()) {
-                    UUID uuid = UUID.fromString(selectResult.getString("uuid"));
-                    String name = selectResult.getString("name");
-                    long start = selectResult.getLong("start");
-                    long expiration = selectResult.getLong("expiration");
+                while (resultSet.next()) {
+                    final String uuidString = resultSet.getString("uuid");
+                    final String name = resultSet.getString("name");
+                    final long start = resultSet.getLong("start");
+                    final long expiration = resultSet.getLong("expiration");
 
-                    if (expiration <= System.currentTimeMillis() / 1000L) {
+                    if (expiration <= TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis())) {
                         PreparedStatement delete = connection.prepareStatement(Query.LOAD_DELETE.value());
 
-                        delete.setString(1, uuid.toString());
+                        delete.setString(1, uuidString);
                         delete.setString(2, name);
                         delete.executeUpdate();
                         delete.close();
                         continue;
                     }
 
-                    Cooldown cooldown = new Cooldown(uuid, name, start, expiration);
-
-                    cooldownsList.add(cooldown);
+                    final UUID uuid = UUID.fromString(uuidString);
+                    table.put(uuid, name, new Cooldown(uuid, name, start, expiration));
                 }
 
-                if (cooldownsList.size() == 0) StringUtil.infoLog(plugin, "&cNo cooldowns found.");
-                else StringUtil.infoLog(plugin, cooldownsList.size() + " &acooldown(s) have been loaded.");
+                if (table.isEmpty()) {
+                    StringUtil.infoLog(plugin, "&cNo cooldowns found.");
+                } else {
+                    StringUtil.infoLog(plugin, table.values().size() + " &acooldown(s) have been loaded.");
+                }
 
                 select.close();
-                return cooldownsList;
             }
         } catch (SQLException e) {
             e.printStackTrace();
             StringUtil.severLog(plugin, "&cAn error occurred while loading the cooldowns.");
         }
 
-        return cooldownsList;
+        return table;
     }
 
     /**
      * Save the cooldowns to the database and remove the expired ones
-     * @param cooldowns cooldowns list
+     * @param table cooldowns table
      */
-    public void saveCooldowns(List<Cooldown> cooldowns){
-        if (cooldowns.size() == 0) return;
+    public void saveCooldowns(@NotNull final Table<UUID, String, Cooldown> table){
+        final Collection<Cooldown> cooldowns = table.values();
+
+        if (cooldowns.size() == 0) {
+            return;
+        }
 
         try {
-            Connection connection = DriverManager.getConnection(uri);
-            List<Cooldown> expiredCooldowns = new LinkedList<>();
+            final Connection connection = DriverManager.getConnection(uri);
+            final List<Cooldown> expiredCooldowns = new LinkedList<>();
 
             for (Cooldown cd : cooldowns) {
                 if (connection != null) {
                     if (cd.isExpired()) {
-                        PreparedStatement delete = connection.prepareStatement(Query.SAVE_DELETE.value());
+                        final PreparedStatement delete = connection.prepareStatement(Query.SAVE_DELETE.value());
 
                         delete.setString(1, cd.getPlayerUuid().toString());
                         delete.setString(2, cd.getName());
@@ -180,16 +189,16 @@ public class DatabaseManager {
                         continue;
                     }
 
-                    PreparedStatement check = connection.prepareStatement(Query.SAVE_CHECK.value());
+                    final PreparedStatement check = connection.prepareStatement(Query.SAVE_CHECK.value());
 
                     check.setString(1, cd.getPlayerUuid().toString());
                     check.setString(2, cd.getName());
                     check.execute();
 
-                    ResultSet checkResult = check.getResultSet();
+                    final ResultSet checkResult = check.getResultSet();
 
                     if (!checkResult.next()) {
-                        PreparedStatement insert = connection.prepareStatement(Query.SAVE_INSERT.value());
+                        final PreparedStatement insert = connection.prepareStatement(Query.SAVE_INSERT.value());
 
                         insert.setString(1, cd.getPlayerUuid().toString());
                         insert.setString(2, cd.getName());
@@ -200,7 +209,7 @@ public class DatabaseManager {
                         continue;
                     }
 
-                    PreparedStatement update = connection.prepareStatement(Query.SAVE_UPDATE.value());
+                    final PreparedStatement update = connection.prepareStatement(Query.SAVE_UPDATE.value());
 
                     update.setLong(1, cd.getStart());
                     update.setLong(2, cd.getExpiration());
@@ -212,10 +221,13 @@ public class DatabaseManager {
                 }
             }
 
-            cooldowns.removeAll(expiredCooldowns);
+            expiredCooldowns.forEach(cooldown -> table.remove(cooldown.getPlayerUuid(), cooldown.getName()));
 
-            if (cooldowns.size() > 0) StringUtil.infoLog(plugin, "&aSaving &f" + cooldowns.size() + " &acooldown(s) to database.");
-            else StringUtil.infoLog(plugin,"&aSaving cooldowns to database.");
+            if (cooldowns.size() > 0) {
+                StringUtil.infoLog(plugin, "&aSaving &f" + cooldowns.size() + " &acooldown(s) to database.");
+            } else {
+                StringUtil.infoLog(plugin,"&aSaving cooldowns to database.");
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -19,9 +19,12 @@
 
 package me.gabytm.mastercooldowns.api;
 
+import com.google.common.collect.Table;
 import me.gabytm.mastercooldowns.MasterCooldowns;
 import me.gabytm.mastercooldowns.cooldown.Cooldown;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,69 +32,77 @@ public class MasterCooldownsAPI {
 
     private final MasterCooldowns plugin;
 
-    public MasterCooldownsAPI(MasterCooldowns plugin) {
+    public MasterCooldownsAPI(@NotNull final MasterCooldowns plugin) {
         this.plugin = plugin;
     }
 
     /**
      * Add a cooldown to the cooldownsList list
+     *
      * @param cooldown the cooldown object
      */
-    public void addCooldown(Cooldown cooldown) {
+    public void addCooldown(@NotNull final Cooldown cooldown) {
         plugin.getCooldownManager().addCooldown(cooldown);
     }
 
     /**
      * Create a new cooldown and add it to the cooldownsList list
-     * @param uuid player uuid
-     * @param name cooldown name
-     * @param start cooldown start time
+     *
+     * @param uuid       player uuid
+     * @param name       cooldown name
+     * @param start      cooldown start time
      * @param expiration cooldown duration
      */
-    public void addCooldown(UUID uuid, String name, long start, long expiration) {
+    public void addCooldown(@NotNull final UUID uuid, @NotNull final String name, final long start, final long expiration) {
         plugin.getCooldownManager().addCooldown(uuid, name, start, expiration);
     }
 
     /**
      * Add a cooldown to the cooldownsList list
+     *
      * @param cooldown the cooldown object
      */
-    public void removeCooldown(Cooldown cooldown) {
+    public void removeCooldown(@NotNull final Cooldown cooldown) {
         plugin.getCooldownManager().removeCooldown(cooldown);
     }
 
     /**
      * Remove a specific cooldown from the cooldownsList list
+     *
      * @param uuid player uuid
      * @param name cooldown name
      */
-    public void removeCooldown(UUID uuid, String name) {
+    public void removeCooldown(@NotNull final UUID uuid, @NotNull final String name) {
         plugin.getCooldownManager().removeCooldown(uuid, name);
     }
 
     /**
      * Get the cooldowns list of a specific player
+     *
      * @param uuid player uuid
      * @return list
      */
-    public List<Cooldown> getPlayerCooldowns(UUID uuid) {
+    public @NotNull Collection<Cooldown> getPlayerCooldowns(@NotNull final UUID uuid) {
         return plugin.getCooldownManager().getPlayerCooldowns(uuid);
     }
 
     /**
      * Get the active cooldowns list of a specific player
+     *
      * @param uuid player uuid
      * @return list
      */
-    public List<Cooldown> getPlayerActiveCooldowns(UUID uuid) {
+    public @NotNull List<Cooldown> getPlayerActiveCooldowns(@NotNull final UUID uuid) {
         return plugin.getCooldownManager().getPlayerActiveCooldowns(uuid);
     }
 
     /**
      * Get the cooldownsList list
+     *
      * @return cooldownsList
      */
-    public List<Cooldown> getCooldownsList() {
-        return plugin.getCooldownManager().getCooldownsList();
+    public @NotNull Table<UUID, String, Cooldown> getLoadedCooldowns() {
+        return plugin.getCooldownManager().getLoadedCooldowns();
     }
+
 }
