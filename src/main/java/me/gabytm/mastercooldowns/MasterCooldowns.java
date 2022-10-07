@@ -28,8 +28,6 @@ import me.gabytm.mastercooldowns.utils.StringUtil;
 import me.mattstudios.mf.base.CommandManager;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bstats.bukkit.Metrics;
-import org.bstats.charts.SingleLineChart;
-import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -72,7 +70,7 @@ public final class MasterCooldowns extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        databaseManager.saveCooldowns(getCooldownManager().getCooldownsList());
+        databaseManager.saveCooldowns(getCooldownManager().getLoadedCooldowns());
         HandlerList.unregisterAll(this);
         getServer().getScheduler().cancelTasks(this);
     }
