@@ -99,10 +99,31 @@ public class CooldownManager {
      * @param expiration cooldown duration
      */
     public void addCooldown(@NotNull final UUID uuid, @NotNull final String name, final long start, final long expiration) {
+        addCooldown(uuid, name, start, expiration, false);
+    }
+
+    /**
+     * Create a new cooldown and add it to the cooldownsList list
+     *
+     * @param uuid       player uuid
+     * @param name       cooldown name
+     * @param start      cooldown start time
+     * @param expiration cooldown duration
+     */
+    public void addCooldown(
+            @NotNull final UUID uuid, @NotNull final String name,
+            final long start, final long expiration,
+            final boolean accumulate
+    ) {
         final Cooldown cooldown = getCooldownByName(uuid, name);
 
         if (cooldown == null) {
             loadedCooldowns.put(uuid, name, new Cooldown(uuid, name.toUpperCase(), start, expiration));
+            return;
+        }
+
+        if (accumulate) {
+            cooldown.setExpiration(cooldown.getExpiration() + (expiration - start));
         } else {
             cooldown.setStart(start);
             cooldown.setExpiration(expiration);
@@ -115,13 +136,30 @@ public class CooldownManager {
      * @param original the cooldown object
      */
     public void addCooldown(@NotNull final Cooldown original) {
+        addCooldown(original, false);
+    }
+
+    /**
+     * Add a cooldown to the cooldownsList list
+     *
+     * @param original   the cooldown object
+     * @param accumulate if the player already has a cooldown with the same id,
+     *                   whether the duration should be accumulated
+     */
+    public void addCooldown(@NotNull final Cooldown original, final boolean accumulate) {
         final Cooldown cooldown = getCooldownByName(original.getPlayerUuid(), original.getName());
 
         if (cooldown == null) {
             loadedCooldowns.put(original.getPlayerUuid(), original.getName(), original);
+            return;
+        }
+
+        if (accumulate) {
+            // Increment duration
+            cooldown.setExpiration(cooldown.getExpiration() + original.getTimeLeft());
         } else {
-            cooldown.setStart(original.getStart());
-            cooldown.setExpiration(original.getExpiration());
+            cooldown.setStart(cooldown.getStart());
+            cooldown.setExpiration(cooldown.getExpiration());
         }
     }
 

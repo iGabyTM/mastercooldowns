@@ -30,6 +30,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.concurrent.TimeUnit;
 
 @Command("mastercooldowns")
 @Alias({"cd", "mcd", "mcooldowns", "mcooldown"})
@@ -42,11 +45,12 @@ public class AddCooldownCommand extends CommandBase {
     @SubCommand("add")
     @Completion("#players")
     @Permission("mastercooldowns.access")
-    public void onCommand(CommandSender sender, String to, String cdName, String cdDuration) {
-        CooldownManager cooldownManager = plugin.getCooldownManager();
-        long duration = System.currentTimeMillis() / 1000L + NumberUtil.durationToSeconds(cdDuration);
+    public void onCommand(CommandSender sender, String to, String cdName, String cdDuration, @Optional Boolean accumulateOptional) {
         boolean onlineSendMessages = plugin.getConfig().getBoolean("settings.add.all.onlineSendMessages", true);
         boolean offlineSendMessages = plugin.getConfig().getBoolean("settings.add.all.offlineSendMessages", true);
+
+        long duration = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()) + NumberUtil.durationToSeconds(cdDuration);
+        boolean accumulate = accumulateOptional != null && accumulateOptional;
 
         if (to.equals("*")) {
             if (sender.getServer().getOnlinePlayers().size() == 0) {
@@ -55,7 +59,7 @@ public class AddCooldownCommand extends CommandBase {
             }
 
             for (Player p : sender.getServer().getOnlinePlayers()) {
-                addCooldown(cooldownManager, sender, p, cdName, duration, onlineSendMessages);
+                addCooldown(sender, p, cdName, duration, onlineSendMessages, accumulate);
             }
 
             return;
@@ -68,20 +72,22 @@ public class AddCooldownCommand extends CommandBase {
             }
 
             for (OfflinePlayer p : sender.getServer().getOfflinePlayers()) {
-                addCooldown(cooldownManager, sender, p, cdName, duration, offlineSendMessages);
+                addCooldown(sender, p, cdName, duration, offlineSendMessages, accumulate);
             }
 
             return;
         }
 
-        OfflinePlayer target = Bukkit.getOfflinePlayer(to);
-
-        addCooldown(cooldownManager, sender, target, cdName, duration, true);
+        addCooldown(sender, Bukkit.getOfflinePlayer(to), cdName, duration, true, accumulate);
     }
 
-    private void addCooldown(CooldownManager cooldownManager, CommandSender sender, OfflinePlayer p, String name, long duration, boolean sendMessages) {
-        Cooldown cooldown = new Cooldown(p.getUniqueId(), name, System.currentTimeMillis() / 1000L, duration);
-        cooldownManager.addCooldown(cooldown);
+    private void addCooldown(
+            @NotNull final CommandSender sender, @NotNull final OfflinePlayer player,
+            @NotNull final String name, final long expiration,
+            final boolean sendMessages, final boolean accumulate
+    ) {
+        Cooldown cooldown = new Cooldown(player.getUniqueId(), name, expiration);
+        plugin.getCooldownManager().addCooldown(cooldown, accumulate);
 
         if (sendMessages) sender.sendMessage(Messages.ADD_INFO.format(cooldown));
     }

@@ -47,6 +47,10 @@ public class Cooldown implements Serializable {
         this.expiration = expiration;
     }
 
+    public Cooldown(UUID uuid, String name, long expiration) {
+        this(uuid, name, TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()), expiration);
+    }
+
     /**
      * Get the player uuid
      * @return uuid
