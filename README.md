@@ -26,6 +26,8 @@ The plugin add the following placeholders to [PlaceholderAPI](https://www.spigot
 | --- | --- | --- | --- |
 | `%mcd_left_COOLDOWN%` | `%mcd_left_daily_reward%` | 86400 | Return the time left of a cooldown as an integer |
 | `%mcd_left_formatted_COOLDOWN%` | `%mcd_left_formatted_daily_reward%` | 24h | Same as above but formatted using PlaceholderAPI simple date format |
+| `%mcd_active_<space separated list>%` | `%mcd_active_daily_reward monthly_reward%` | 2 | Return how many of the provided cooldowns are active |
+| `%mcd_inactive_<space separated list>%` | `%mcd_inactive_daily_reward monthly_reward%` | 2 | Return how many of the provided cooldowns are inactive |
 
 ## Config
 The default config can be found [here](iGabyTM/MasterCooldowns/tree/master/src/main/resources/config.yml).
