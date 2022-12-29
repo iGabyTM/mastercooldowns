@@ -27,7 +27,11 @@ import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 public class PlaceholderAPIHook extends PlaceholderExpansion {
 
@@ -35,6 +39,15 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
 
     public PlaceholderAPIHook(MasterCooldowns plugin) {
         this.plugin = plugin;
+    }
+
+    private @NotNull Stream<@Nullable Cooldown> getCooldowns(@NotNull final UUID uuid, @NotNull final String list) {
+        return Arrays.stream(list.split(" "))
+                .map(it -> plugin.getCooldownManager().getCooldownByName(uuid, it));
+    }
+
+    private @NotNull String bool(final boolean bool) {
+        return plugin.getConfig().getString("placeholders.boolean." + bool, Boolean.toString(bool));
     }
 
     @Override
@@ -82,6 +95,32 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
             return plugin.getConfig().getString("placeholders.empty", "");
         }
 
+        if (param.startsWith("active_")) {
+            final long count = getCooldowns(p.getUniqueId(), param.replace("active_", ""))
+                    .filter(Objects::nonNull)
+                    .filter(it -> !it.isExpired())
+                    .count();
+            return String.valueOf(count);
+        }
+
+        if (param.startsWith("inactive_")) {
+            final long count = getCooldowns(p.getUniqueId(), param.replace("inactive_", ""))
+                    .filter(it -> it == null || it.isExpired())
+                    .count();
+            return String.valueOf(count);
+        }
+
+        if (param.startsWith("isactive_")) {
+            final Cooldown cooldown = cooldownManager.getCooldownByName(p.getUniqueId(), param.replace("isactive_", ""));
+            return bool(cooldown != null && !cooldown.isExpired());
+        }
+
+        if (param.startsWith("isinactive_")) {
+            final Cooldown cooldown = cooldownManager.getCooldownByName(p.getUniqueId(), param.replace("isinactive_", ""));
+            return bool(cooldown == null || cooldown.isExpired());
+        }
+
         return null;
     }
+
 }

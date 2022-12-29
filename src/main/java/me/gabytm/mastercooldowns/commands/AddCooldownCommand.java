@@ -78,7 +78,7 @@ public class AddCooldownCommand extends CommandBase {
             return;
         }
 
-        addCooldown(sender, Bukkit.getOfflinePlayer(to), cdName, duration, true, accumulate);
+        addCooldown(sender, Bukkit.getOfflinePlayer(to), cdName, duration, plugin.getConfig().getBoolean("settings.add.single.sendMessage", true), accumulate);
     }
 
     private void addCooldown(

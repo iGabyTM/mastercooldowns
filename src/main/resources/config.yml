@@ -9,9 +9,12 @@ placeholders:
     minutes: m
     hours: h
     days: d
+  boolean:
+    'true': 'Yes'
+    'false': 'No'
 
 #
-# General setting
+# General settings
 #
 settings:
   #
@@ -22,7 +25,8 @@ settings:
   add:
     #
     # The function name
-    #  • all - add a cooldown to all online or offline players
+    #  • all    - add a cooldown to all online or offline players
+    #  • single - add a cooldown to a single player
     #
     all:
       #
@@ -31,6 +35,11 @@ settings:
       #
       onlineSendMessages: true
       offlineSendMessages: true
+    single:
+      #
+      # • sendMessage  - send messages when adding cooldown to a single player
+      #
+      sendMessage: true
   remove:
     #
     # The function name
@@ -43,3 +52,16 @@ settings:
       #
       onlineSendMessages: true
       offlineSendMessages: true
+
+#
+# Storage related settings
+#
+storage:
+  #
+  # Whether the save message should be displayed in console
+  #
+  sendSavingMessage: true
+  #
+  # Cooldowns saving interval in seconds
+  #
+  savingInterval: 600

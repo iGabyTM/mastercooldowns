@@ -83,11 +83,13 @@ public class DatabaseManager {
                 createTable(connection);
                 plugin.getCooldownManager().loadCooldowns(loadCooldowns());
 
+                long savingInterval = plugin.getConfig().getLong("storage.savingInterval", 600) * 20L;
+
                 new BukkitRunnable() {
                     public void run() {
                         saveCooldowns(plugin.getCooldownManager().getLoadedCooldowns());
                     }
-                }.runTaskTimerAsynchronously(plugin, 12000L, 12000L);
+                }.runTaskTimerAsynchronously(plugin, savingInterval, savingInterval);
             }
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -223,10 +225,12 @@ public class DatabaseManager {
 
             expiredCooldowns.forEach(cooldown -> table.remove(cooldown.getPlayerUuid(), cooldown.getName()));
 
+            if (!plugin.getConfig().getBoolean("storage.sendSavingMessage", true)) {
+                return;
+            }
+
             if (cooldowns.size() > 0) {
-                StringUtil.infoLog(plugin, "&aSaving &f" + cooldowns.size() + " &acooldown(s) to database.");
-            } else {
-                StringUtil.infoLog(plugin,"&aSaving cooldowns to database.");
+                StringUtil.infoLog(plugin, "&aSaved &f" + cooldowns.size() + " &acooldown(s) to database.");
             }
         } catch (SQLException e) {
             e.printStackTrace();
