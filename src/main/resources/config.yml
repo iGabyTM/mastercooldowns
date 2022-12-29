@@ -49,3 +49,16 @@ settings:
       #
       onlineSendMessages: true
       offlineSendMessages: true
+
+#
+# Storage related settings
+#
+storage:
+  #
+  # Whether the save message should be displayed in console
+  #
+  sendSavingMessage: true
+  #
+  # Cooldowns saving interval in seconds
+  #
+  savingInterval: 600
