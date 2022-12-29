@@ -46,6 +46,10 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                 .map(it -> plugin.getCooldownManager().getCooldownByName(uuid, it));
     }
 
+    private @NotNull String bool(final boolean bool) {
+        return plugin.getConfig().getString("placeholders.boolean." + bool, Boolean.toString(bool));
+    }
+
     @Override
     public @NotNull String getAuthor() {
         return String.join(", ", plugin.getDescription().getAuthors());
@@ -104,6 +108,16 @@ public class PlaceholderAPIHook extends PlaceholderExpansion {
                     .filter(it -> it == null || it.isExpired())
                     .count();
             return String.valueOf(count);
+        }
+
+        if (param.startsWith("isactive_")) {
+            final Cooldown cooldown = cooldownManager.getCooldownByName(p.getUniqueId(), param.replace("isactive_", ""));
+            return bool(cooldown != null && !cooldown.isExpired());
+        }
+
+        if (param.startsWith("isinactive_")) {
+            final Cooldown cooldown = cooldownManager.getCooldownByName(p.getUniqueId(), param.replace("isinactive_", ""));
+            return bool(cooldown == null || cooldown.isExpired());
         }
 
         return null;

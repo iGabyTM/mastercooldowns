@@ -9,6 +9,9 @@ placeholders:
     minutes: m
     hours: h
     days: d
+  boolean:
+    'true': 'Yes'
+    'false': 'No'
 
 #
 # General settings
