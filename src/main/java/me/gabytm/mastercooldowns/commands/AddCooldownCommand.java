@@ -21,7 +21,6 @@ package me.gabytm.mastercooldowns.commands;
 
 import me.gabytm.mastercooldowns.MasterCooldowns;
 import me.gabytm.mastercooldowns.cooldown.Cooldown;
-import me.gabytm.mastercooldowns.cooldown.CooldownManager;
 import me.gabytm.mastercooldowns.utils.Messages;
 import me.gabytm.mastercooldowns.utils.NumberUtil;
 import me.mattstudios.mf.annotations.*;
