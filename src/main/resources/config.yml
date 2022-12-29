@@ -11,7 +11,7 @@ placeholders:
     days: d
 
 #
-# General setting
+# General settings
 #
 settings:
   #
@@ -22,7 +22,8 @@ settings:
   add:
     #
     # The function name
-    #  • all - add a cooldown to all online or offline players
+    #  • all    - add a cooldown to all online or offline players
+    #  • single - add a cooldown to a single player
     #
     all:
       #
@@ -31,6 +32,11 @@ settings:
       #
       onlineSendMessages: true
       offlineSendMessages: true
+    single:
+      #
+      # • sendMessage  - send messages when adding cooldown to a single player
+      #
+      sendMessage: true
   remove:
     #
     # The function name

@@ -45,6 +45,7 @@ public class AddCooldownCommand extends CommandBase {
     public void onCommand(CommandSender sender, String to, String cdName, String cdDuration) {
         CooldownManager cooldownManager = plugin.getCooldownManager();
         long duration = System.currentTimeMillis() / 1000L + NumberUtil.durationToSeconds(cdDuration);
+
         boolean onlineSendMessages = plugin.getConfig().getBoolean("settings.add.all.onlineSendMessages", true);
         boolean offlineSendMessages = plugin.getConfig().getBoolean("settings.add.all.offlineSendMessages", true);
 
@@ -76,7 +77,7 @@ public class AddCooldownCommand extends CommandBase {
 
         OfflinePlayer target = Bukkit.getOfflinePlayer(to);
 
-        addCooldown(cooldownManager, sender, target, cdName, duration, true);
+        addCooldown(cooldownManager, sender, target, cdName, duration, plugin.getConfig().getBoolean("settings.add.single.sendMessage", true));
     }
 
     private void addCooldown(CooldownManager cooldownManager, CommandSender sender, OfflinePlayer p, String name, long duration, boolean sendMessages) {
