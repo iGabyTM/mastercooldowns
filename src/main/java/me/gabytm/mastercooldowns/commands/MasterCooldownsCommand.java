@@ -20,11 +20,7 @@
 package me.gabytm.mastercooldowns.commands;
 
 import me.gabytm.mastercooldowns.MasterCooldowns;
-import me.mattstudios.mf.annotations.Alias;
-import me.mattstudios.mf.annotations.Command;
-import me.mattstudios.mf.annotations.Default;
-import me.mattstudios.mf.annotations.Permission;
-import me.mattstudios.mf.annotations.SubCommand;
+import me.mattstudios.mf.annotations.*;
 import me.mattstudios.mf.base.CommandBase;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
