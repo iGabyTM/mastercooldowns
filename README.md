@@ -5,14 +5,14 @@
 - [SpigotMC](https://www.spigotmc.org/resources/72145/)
 
 ## Commands
-| Name | Usage | Description |
-| --- | --- | --- |
-| `mcd add [player] [id] [duration]` | `mcd add GabyTM daily_reward 86400` | Add a new cooldown, if the id is already in use the cooldown will be overridden. The duration is in seconds |
-| `mcd remove [player┃*┃**] [id┃all]` | `mcd remove GabyTM daily_reward` | Use `*` as player argument to remove cooldowns from all online players, `**` for offline players and `all` as id to remove all cooldowns |
-| `mcd check [player] [id]` | `mcd check GabyTM daily_reward` | Check the time left of a cooldown |
-| `mcd list [player]` | `mcd list GabyTM` | A list of the available cooldowns |
-| `mcd reload` | `mcd reload` | Reload the config |
-| `mcd help` | `mcd help` | Display the commands list |
+| Name                                                 | Usage                               | Description                                                                                                                                                                                                                                                                                        |
+|------------------------------------------------------|-------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `mcd add [player┃*┃**] [id] [duration] <accumulate>` | `mcd add GabyTM daily_reward 86400` | Add a new cooldown, if the id is already in use the cooldown will be overridden. The duration is in seconds. By passing `true` as value for 'accumulate', if the player has an active cooldown with the same id, the 'duration' will be added to the existing cooldown (remaining time + duration) |
+| `mcd remove [player┃*┃**] [id┃all]`                  | `mcd remove GabyTM daily_reward`    | Use `*` as player argument to remove cooldowns from all online players, `**` for offline players and `all` as id to remove all cooldowns                                                                                                                                                           |
+| `mcd check [player] [id]`                            | `mcd check GabyTM daily_reward`     | Check the time left of a cooldown                                                                                                                                                                                                                                                                  |
+| `mcd list [player]`                                  | `mcd list GabyTM`                   | A list of the available cooldowns                                                                                                                                                                                                                                                                  |
+| `mcd reload`                                         | `mcd reload`                        | Reload the config                                                                                                                                                                                                                                                                                  |
+| `mcd help`                                           | `mcd help`                          | Display the commands list                                                                                                                                                                                                                                                                          |
 
 > ```
 > Note: To use the commands you need the 'mastercooldowns.access' permission.
