@@ -133,33 +133,33 @@ public class CooldownManager {
     /**
      * Add a cooldown to the cooldownsList list
      *
-     * @param original the cooldown object
+     * @param cooldown the cooldown object
      */
-    public void addCooldown(@NotNull final Cooldown original) {
-        addCooldown(original, false);
+    public void addCooldown(@NotNull final Cooldown cooldown) {
+        addCooldown(cooldown, false);
     }
 
     /**
      * Add a cooldown to the cooldownsList list
      *
-     * @param original   the cooldown object
+     * @param cooldown   the cooldown object
      * @param accumulate if the player already has a cooldown with the same id,
      *                   whether the duration should be accumulated
      */
-    public void addCooldown(@NotNull final Cooldown original, final boolean accumulate) {
-        final Cooldown cooldown = getCooldownByName(original.getPlayerUuid(), original.getName());
+    public void addCooldown(@NotNull final Cooldown cooldown, final boolean accumulate) {
+        final Cooldown existing = getCooldownByName(cooldown.getPlayerUuid(), cooldown.getName());
 
-        if (cooldown == null) {
-            loadedCooldowns.put(original.getPlayerUuid(), original.getName(), original);
+        if (existing == null) {
+            loadedCooldowns.put(cooldown.getPlayerUuid(), cooldown.getName(), cooldown);
             return;
         }
 
         if (accumulate) {
             // Increment duration
-            cooldown.setExpiration(cooldown.getExpiration() + original.getTimeLeft());
+            existing.setExpiration(existing.getExpiration() + cooldown.getTimeLeft());
         } else {
-            cooldown.setStart(cooldown.getStart());
-            cooldown.setExpiration(cooldown.getExpiration());
+            existing.setStart(cooldown.getStart());
+            existing.setExpiration(cooldown.getExpiration());
         }
     }
 
