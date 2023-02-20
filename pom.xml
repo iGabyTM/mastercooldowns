@@ -6,7 +6,7 @@
 
     <groupId>me.gabytm</groupId>
     <artifactId>MasterCooldowns</artifactId>
-    <version>1.6</version>
+    <version>1.6.1</version>
     <packaging>jar</packaging>
 
     <name>MasterCooldowns</name>
